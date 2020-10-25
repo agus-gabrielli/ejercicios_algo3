@@ -1,3 +1,97 @@
+!classDefinition: #CintaAzul category: 'Factorio'!
+DenotativeObject subclass: #CintaAzul
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Factorio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CintaAzul class' category: 'Factorio'!
+CintaAzul class
+	instanceVariableNames: 'contenido destino'!
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+agregar: unaMena
+	contenido add: unaMena.! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+cantidadDe: unaMenaDeMuestra
+	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
+	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+cantidadDeMenas
+	^contenido size.! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+conectarA: unDestino
+	destino := unDestino.! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	contenido := ((OrderedCollection new)).
+	destino := CintaRoja.! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+transportarContenido
+	contenido do: [ :mena | destino agregar: mena].
+	self vaciar.! !
+
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+vaciar
+	contenido := OrderedCollection new.! !
+
+
+!classDefinition: #CintaRoja category: 'Factorio'!
+DenotativeObject subclass: #CintaRoja
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Factorio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CintaRoja class' category: 'Factorio'!
+CintaRoja class
+	instanceVariableNames: 'contenido destino'!
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
+agregar: unaMena
+	contenido add: unaMena.! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:21:21'!
+cantidadDe: unaMenaDeMuestra
+	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
+	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
+cantidadDeMenas
+	^contenido size.! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:13:00'!
+conectarA: unDestino
+	destino := unDestino.! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+initializeCollaboratorsFromFile
+	"Auto generated method for loading purposes - Do not modify it"
+
+	contenido := ((OrderedCollection new)).
+	destino := Contenedor.! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:29:37'!
+transportarContenido
+	contenido do: [ :mena | destino agregar: mena].
+	self vaciar.! !
+
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
+vaciar
+	contenido := OrderedCollection new.! !
+
+
 !classDefinition: #Contenedor category: 'Factorio'!
 DenotativeObject subclass: #Contenedor
 	instanceVariableNames: ''
@@ -23,7 +117,7 @@ cantidadDe: unaMenaDeMuestra
 cantidadDeMenas
 	^contenido size.! !
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -55,11 +149,11 @@ conectarA: unDestino
 extraer
 	destino agregar: #carbon.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	destino := PrimeraCinta.! !
+	destino := CintaRoja.! !
 
 
 !classDefinition: #ExtractorDeHierro category: 'Factorio'!
@@ -83,11 +177,11 @@ conectarA: unDestino
 extraer
 	destino agregar: #hierro.! !
 
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	destino := SegundaCinta.! !
+	destino := CintaAzul.! !
 
 
 !classDefinition: #FactorioTest category: 'Factorio'!
@@ -126,21 +220,21 @@ test01ExtractorCaja
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.! !
 
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:17:51'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'MR 10/25/2020 18:38:25'!
 configurarCircuitoExtractorCintaCaja
 
 	Contenedor vaciar.
-	PrimeraCinta vaciar.
-	ExtractorDeCarbon conectarA: PrimeraCinta. 
-	PrimeraCinta conectarA: Contenedor.! !
+	CintaRoja vaciar.
+	ExtractorDeCarbon conectarA: CintaRoja. 
+	CintaRoja conectarA: Contenedor.! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:17:56'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'MR 10/25/2020 18:38:25'!
 hacerAndarCircuitoExtractorCintaCaja
 
 	ExtractorDeCarbon extraer.
-	PrimeraCinta transportarContenido ! !
+	CintaRoja transportarContenido ! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:18:05'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'MR 10/25/2020 18:38:25'!
 test02ExtractorCintaCaja
 	self configurarCircuitoExtractorCintaCaja.
 	
@@ -148,30 +242,30 @@ test02ExtractorCintaCaja
 	
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.
-	Assert that: PrimeraCinta cantidadDeMenas isEqualTo: 0.! !
+	Assert that: CintaRoja cantidadDeMenas isEqualTo: 0.! !
 
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:23'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'MR 10/25/2020 18:38:45'!
 configurarCircuitoExtractorExtractorCintaCintaCaja
 
 	Contenedor vaciar.
-	PrimeraCinta vaciar.
-	SegundaCinta vaciar.
-	ExtractorDeCarbon conectarA: PrimeraCinta.
-	ExtractorDeHierro conectarA: SegundaCinta.
-	PrimeraCinta conectarA: Contenedor.
-	SegundaCinta conectarA: PrimeraCinta.	
+	CintaRoja vaciar.
+	CintaAzul vaciar.
+	ExtractorDeCarbon conectarA: CintaRoja.
+	ExtractorDeHierro conectarA: CintaAzul.
+	CintaRoja conectarA: Contenedor.
+	CintaAzul conectarA: CintaRoja.	
 ! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:37'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'MR 10/25/2020 18:38:45'!
 hacerAndarCircuitoExtractorExtractorCintaCintaCaja
 	
 	ExtractorDeCarbon extraer.
 	ExtractorDeHierro extraer.
-	SegundaCinta transportarContenido.
-	PrimeraCinta transportarContenido.! !
+	CintaAzul transportarContenido.
+	CintaRoja transportarContenido.! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:45'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'MR 10/25/2020 18:38:45'!
 test03ExtractorExtractorCintaCintaCaja
 	self configurarCircuitoExtractorExtractorCintaCintaCaja.
 	
@@ -180,105 +274,11 @@ test03ExtractorExtractorCintaCintaCaja
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: (Contenedor cantidadDe: #hierro) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 2.
-	Assert that: PrimeraCinta cantidadDeMenas isEqualTo: 0.
-	Assert that: SegundaCinta cantidadDeMenas isEqualTo: 0.! !
+	Assert that: CintaRoja cantidadDeMenas isEqualTo: 0.
+	Assert that: CintaAzul cantidadDeMenas isEqualTo: 0.! !
 
-
-!classDefinition: #PrimeraCinta category: 'Factorio'!
-DenotativeObject subclass: #PrimeraCinta
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Factorio'!
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'PrimeraCinta class' category: 'Factorio'!
-PrimeraCinta class
-	instanceVariableNames: 'contenido destino'!
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-agregar: unaMena
-	contenido add: unaMena.! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:21:21'!
-cantidadDe: unaMenaDeMuestra
-	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
-	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-cantidadDeMenas
-	^contenido size.! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:13:00'!
-conectarA: unDestino
-	destino := unDestino.! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
-initializeCollaboratorsFromFile
-	"Auto generated method for loading purposes - Do not modify it"
-
-	contenido := ((OrderedCollection new)).
-	destino := Contenedor.! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:29:37'!
-transportarContenido
-	contenido do: [ :mena | destino agregar: mena].
-	self vaciar.! !
-
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-vaciar
-	contenido := OrderedCollection new.! !
-
-
-!classDefinition: #SegundaCinta category: 'Factorio'!
-DenotativeObject subclass: #SegundaCinta
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Factorio'!
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'SegundaCinta class' category: 'Factorio'!
-SegundaCinta class
-	instanceVariableNames: 'contenido destino'!
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-agregar: unaMena
-	contenido add: unaMena.! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-cantidadDe: unaMenaDeMuestra
-	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
-	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-cantidadDeMenas
-	^contenido size.! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-conectarA: unDestino
-	destino := unDestino.! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
-initializeCollaboratorsFromFile
-	"Auto generated method for loading purposes - Do not modify it"
-
-	contenido := ((OrderedCollection new)).
-	destino := PrimeraCinta.! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-transportarContenido
-	contenido do: [ :mena | destino agregar: mena].
-	self vaciar.! !
-
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-vaciar
-	contenido := OrderedCollection new.! !
-
+CintaAzul initializeAfterFileIn!
+CintaRoja initializeAfterFileIn!
 Contenedor initializeAfterFileIn!
 ExtractorDeCarbon initializeAfterFileIn!
 ExtractorDeHierro initializeAfterFileIn!
-PrimeraCinta initializeAfterFileIn!
-SegundaCinta initializeAfterFileIn!
