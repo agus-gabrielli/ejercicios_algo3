@@ -1,3 +1,4 @@
+A continuacion esta el enunciado del ejercicio propuesto por la catedra:
 # Factorio
 
 Hola soy el ingeniero de la planta Factorio donde extraemos hierro y carbón. Necesito un sistema que me ayude a planificar distintas formas de organizar nuestro circuito de producción. En la fábrica contamos con dos extractores, uno de carbón y otro de hierro, dos cintas transportadoras (dato de color…una es roja y la otra azul) y una caja donde almacenamos las menas de carbón y hierro producidas. El circuito que tenemos hoy en la fábrica es el siguiente:
