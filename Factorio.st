@@ -23,7 +23,7 @@ cantidadDe: unaMenaDeMuestra
 cantidadDeMenas
 	^contenido size.! !
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:58:36'!
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -55,7 +55,7 @@ conectarA: unDestino
 extraer
 	destino agregar: #carbon.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:58:36'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -83,7 +83,7 @@ conectarA: unDestino
 extraer
 	destino agregar: #hierro.! !
 
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:58:36'!
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -126,25 +126,21 @@ test01ExtractorCaja
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.! !
 
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 15:23:53'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:17:51'!
 configurarCircuitoExtractorCintaCaja
 
 	Contenedor vaciar.
-	"No se olviden de vaciar la cinta tambien!!"
 	PrimeraCinta vaciar.
-	"Conectamos el extractor a la cinta, luego conectamos la cinta a la caja"
 	ExtractorDeCarbon conectarA: PrimeraCinta. 
 	PrimeraCinta conectarA: Contenedor.! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 15:26:21'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:17:56'!
 hacerAndarCircuitoExtractorCintaCaja
 
-	"Hacemos andar el extractor, asi deja un carbon en la cinta."
 	ExtractorDeCarbon extraer.
-	"Luego hacemos andar la cinta (con algun mensaje) y deberia dejar el carbon en la caja.	"
 	PrimeraCinta transportarContenido ! !
 
-!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 15:27:50'!
+!FactorioTest class methodsFor: 'escenario 2' stamp: 'AG 10/25/2020 16:18:05'!
 test02ExtractorCintaCaja
 	self configurarCircuitoExtractorCintaCaja.
 	
@@ -152,41 +148,30 @@ test02ExtractorCintaCaja
 	
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 1.
-	"Tambien tenemos que chequear que en la cinta no haya nada. Cero carbon."
 	Assert that: PrimeraCinta cantidadDeMenas isEqualTo: 0.! !
 
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 15:49:07'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:23'!
 configurarCircuitoExtractorExtractorCintaCintaCaja
 
 	Contenedor vaciar.
-	"Además de vaciar el Contenedor (arriba) también vaciamos las dos cintas"
 	PrimeraCinta vaciar.
 	SegundaCinta vaciar.
-	"Conectamos el extractor de carbon a una de las cintas"
 	ExtractorDeCarbon conectarA: PrimeraCinta.
-	"Conectamos el extractor de hierro a la otra cinta"
 	ExtractorDeHierro conectarA: SegundaCinta.
-	"Ahora conectamos la primer cinta al Contenedor"
 	PrimeraCinta conectarA: Contenedor.
-	"Y conectamos la segunda cinta a la primer cinta"
 	SegundaCinta conectarA: PrimeraCinta.	
 ! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 15:51:20'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:37'!
 hacerAndarCircuitoExtractorExtractorCintaCintaCaja
 	
-	"Hacemos andar el extractor, asi deja un carbon en la cinta.
-	Lo mismo con el otro extractor, asi deja una mena de hierro en la otra cinta.
-	Hacemos andar la cinta con la mena de hierro, asi la deposita en la cinta que tiene el carbon.
-	Ahora podemos hacer andar la ultima cinta, la que recibió primero el carbon 
-	y ahora tambien tiene el hierro y que deje todo en el Contenedor."
 	ExtractorDeCarbon extraer.
 	ExtractorDeHierro extraer.
 	SegundaCinta transportarContenido.
 	PrimeraCinta transportarContenido.! !
 
-!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 15:52:26'!
+!FactorioTest class methodsFor: 'escenario 3' stamp: 'AG 10/25/2020 16:18:45'!
 test03ExtractorExtractorCintaCintaCaja
 	self configurarCircuitoExtractorExtractorCintaCintaCaja.
 	
@@ -195,7 +180,6 @@ test03ExtractorExtractorCintaCintaCaja
 	Assert that: (Contenedor cantidadDe: #carbon) isEqualTo: 1.
 	Assert that: (Contenedor cantidadDe: #hierro) isEqualTo: 1.
 	Assert that: Contenedor cantidadDeMenas isEqualTo: 2.
-	"Tambien tenemos que chequear que no haya nada en las cintas"
 	Assert that: PrimeraCinta cantidadDeMenas isEqualTo: 0.
 	Assert that: SegundaCinta cantidadDeMenas isEqualTo: 0.! !
 
@@ -230,7 +214,7 @@ cantidadDeMenas
 conectarA: unDestino
 	destino := unDestino.! !
 
-!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:58:36'!
+!PrimeraCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -277,7 +261,7 @@ cantidadDeMenas
 conectarA: unDestino
 	destino := unDestino.! !
 
-!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:58:36'!
+!SegundaCinta class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 16:21:54'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
