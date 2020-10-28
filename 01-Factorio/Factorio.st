@@ -28,7 +28,7 @@ cantidadDeMenas
 conectarA: unDestino
 	destino := unDestino.! !
 
-!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -46,7 +46,7 @@ vaciar
 
 
 !classDefinition: #CintaRoja category: 'Factorio'!
-DenotativeObject subclass: #CintaRoja
+CintaAzul subclass: #CintaRoja
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -56,40 +56,14 @@ DenotativeObject subclass: #CintaRoja
 
 !classDefinition: 'CintaRoja class' category: 'Factorio'!
 CintaRoja class
-	instanceVariableNames: 'contenido destino'!
+	instanceVariableNames: ''!
 
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-agregar: unaMena
-	contenido add: unaMena.! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:21:21'!
-cantidadDe: unaMenaDeMuestra
-	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
-	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-cantidadDeMenas
-	^contenido size.! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:13:00'!
-conectarA: unDestino
-	destino := unDestino.! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	contenido := ((OrderedCollection new)).
 	destino := Contenedor.! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:29:37'!
-transportarContenido
-	contenido do: [ :mena | destino agregar: mena].
-	self vaciar.! !
-
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:12:17'!
-vaciar
-	contenido := OrderedCollection new.! !
 
 
 !classDefinition: #Contenedor category: 'Factorio'!
@@ -117,7 +91,7 @@ cantidadDe: unaMenaDeMuestra
 cantidadDeMenas
 	^contenido size.! !
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -139,25 +113,26 @@ DenotativeObject subclass: #ExtractorDeCarbon
 
 !classDefinition: 'ExtractorDeCarbon class' category: 'Factorio'!
 ExtractorDeCarbon class
-	instanceVariableNames: 'destino'!
+	instanceVariableNames: 'destino tipoDeMena'!
 
 !ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'SF 10/23/2020 00:33:23'!
 conectarA: unDestino
 	destino := unDestino.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'SF 10/23/2020 00:33:50'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 14:22:56'!
 extraer
-	destino agregar: #carbon.! !
+	destino agregar: tipoDeMena.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	destino := CintaRoja.! !
+	destino := CintaRoja.
+	tipoDeMena := #carbon.! !
 
 
 !classDefinition: #ExtractorDeHierro category: 'Factorio'!
-DenotativeObject subclass: #ExtractorDeHierro
+ExtractorDeCarbon subclass: #ExtractorDeHierro
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -167,21 +142,14 @@ DenotativeObject subclass: #ExtractorDeHierro
 
 !classDefinition: 'ExtractorDeHierro class' category: 'Factorio'!
 ExtractorDeHierro class
-	instanceVariableNames: 'destino'!
+	instanceVariableNames: ''!
 
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:46:03'!
-conectarA: unDestino
-	destino := unDestino.! !
-
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:47:03'!
-extraer
-	destino agregar: #hierro.! !
-
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'MR 10/25/2020 18:39:48'!
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	destino := CintaAzul.! !
+	destino := CintaAzul.
+	tipoDeMena := #hierro.! !
 
 
 !classDefinition: #FactorioTest category: 'Factorio'!
