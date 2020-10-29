@@ -11,14 +11,9 @@ DenotativeObject subclass: #CintaAzul
 CintaAzul class
 	instanceVariableNames: 'contenido destino'!
 
-!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-agregar: unaMena
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:47:20'!
+agregarMena: unaMena
 	contenido add: unaMena.! !
-
-!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
-cantidadDe: unaMenaDeMuestra
-	"Hay que preguntar bien si se pueden agregar metodos para testear el correcto funcionamiento de la cinta..."
-	^contenido count: [:unaMena | unaMena = unaMenaDeMuestra ].! !
 
 !CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
 cantidadDeMenas
@@ -28,16 +23,16 @@ cantidadDeMenas
 conectarA: unDestino
 	destino := unDestino.! !
 
-!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:52:45'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	contenido := ((OrderedCollection new)).
 	destino := CintaRoja.! !
 
-!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
+!CintaAzul class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:47:20'!
 transportarContenido
-	contenido do: [ :mena | destino agregar: mena].
+	contenido do: [ :mena | destino agregarMena: mena].
 	self vaciar.! !
 
 !CintaAzul class methodsFor: 'as yet unclassified' stamp: 'AG 10/25/2020 15:44:42'!
@@ -58,7 +53,7 @@ CintaAzul subclass: #CintaRoja
 CintaRoja class
 	instanceVariableNames: ''!
 
-!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
+!CintaRoja class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:52:45'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -79,8 +74,8 @@ DenotativeObject subclass: #Contenedor
 Contenedor class
 	instanceVariableNames: 'contenido'!
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'SF 10/23/2020 00:35:04'!
-agregar: unaMena
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:47:57'!
+agregarMena: unaMena
 	contenido add: unaMena.! !
 
 !Contenedor class methodsFor: 'as yet unclassified' stamp: 'SF 10/23/2020 00:38:00'!
@@ -91,7 +86,7 @@ cantidadDe: unaMenaDeMuestra
 cantidadDeMenas
 	^contenido size.! !
 
-!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
+!Contenedor class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:52:45'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -119,11 +114,11 @@ ExtractorDeCarbon class
 conectarA: unDestino
 	destino := unDestino.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 14:22:56'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:49:14'!
 extraer
-	destino agregar: tipoDeMena.! !
+	destino agregarMena: tipoDeMena.! !
 
-!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
+!ExtractorDeCarbon class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:52:45'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -144,7 +139,7 @@ ExtractorDeCarbon subclass: #ExtractorDeHierro
 ExtractorDeHierro class
 	instanceVariableNames: ''!
 
-!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 19:49:53'!
+!ExtractorDeHierro class methodsFor: 'as yet unclassified' stamp: 'MR 10/28/2020 21:52:45'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
