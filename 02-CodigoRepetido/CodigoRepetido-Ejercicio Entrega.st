@@ -189,27 +189,11 @@ addCustomerNamed: aName
 	
 	active add: aName ! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'MR 11/3/2020 16:48:26'!
+!CustomerBook methodsFor: 'customer management' stamp: 'AG 11/3/2020 17:09:20'!
 removeCustomerNamed: aName 
 	
-	
-	[self removeCustomerNamed: aName from: active.]
-		on: NotFound
-		do: [self removeCustomerNamed: aName from: suspended.].
-	^aName
-! !
-
-!CustomerBook methodsFor: 'customer management' stamp: 'MR 11/3/2020 16:39:15'!
-removeCustomerNamed: aName from: aCustomerList
- 	1 to: aCustomerList size do:
-	[ :index |
-		aName = (aCustomerList at: index)
-			ifTrue: [
-				aCustomerList removeAt: index.
-				^ aName 
-			] 
-	].
- 	^NotFound signal
+	active remove: aName ifAbsent: [ suspended remove: aName ifAbsent: [ ^NotFound signal ] ].
+	^aName.
 ! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
