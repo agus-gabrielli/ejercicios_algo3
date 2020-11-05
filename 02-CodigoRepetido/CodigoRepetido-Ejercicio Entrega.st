@@ -30,13 +30,13 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	self testThatCollaborations: [customerBook addCustomerNamed: 'John Lennon'.] shouldNotTakeMoreMillisecondsThan: 50
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/2/2020 21:48:36'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
 	| customerBook paulMcCartney |
 	
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomer: paulMcCartney.
+	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
 
 	self testThatCollaborations: [customerBook removeCustomerNamed: paulMcCartney.] shouldNotTakeMoreMillisecondsThan: 100
 	
@@ -58,13 +58,13 @@ test03CanNotAddACustomerWithEmptyName
 		
 		! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/3/2020 14:59:38'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon testAction firstCondition secondCondition |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomer: johnLennon.
+	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
 	testAction := [customerBook removeCustomerNamed: 'Paul McCartney'].
 	firstCondition := [customerBook numberOfCustomers = 1].
 	secondCondition := [customerBook includesCustomerNamed: johnLennon].
@@ -74,13 +74,13 @@ test04CanNotRemoveAnInvalidCustomer
 
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/3/2020 15:39:49'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomer: paulMcCartney.
+	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
 	
 	customerBook suspendCustomerNamed: paulMcCartney.
 	self testThatBook: customerBook containsActiveCustomers: 0 andSuspendedCustomers: 1 forATotalOf: 1 andAlsoTestThat: [customerBook includesCustomerNamed: paulMcCartney].
@@ -89,13 +89,13 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/3/2020 15:39:49'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomer: paulMcCartney.
+	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
 	
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
@@ -105,13 +105,13 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/3/2020 15:07:19'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test07CanNotSuspendAnInvalidCustomer
 		
 	| customerBook johnLennon testAction firstCondition secondCondition |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomer: johnLennon.
+	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
 	testAction := [customerBook suspendCustomerNamed: 'Ringo Starr'].
 	firstCondition := [customerBook numberOfCustomers = 1].
 	secondCondition := [customerBook includesCustomerNamed: johnLennon].
@@ -120,13 +120,13 @@ test07CanNotSuspendAnInvalidCustomer
 	self testFailureOf: testAction withError: CantSuspend withConditions: firstCondition and: secondCondition
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/3/2020 15:09:47'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 		
 	| customerBook johnLennon testAction firstCondition secondCondition |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomer: johnLennon.
+	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
 	testAction := [customerBook suspendCustomerNamed: johnLennon].
 	firstCondition := [customerBook numberOfCustomers = 1].
@@ -261,8 +261,8 @@ customerCanNotBeEmptyErrorMessage
 	^'Customer Name Cannot Be Empty'! !
 
 
-!CustomerBook class methodsFor: 'initialization' stamp: 'MR 11/2/2020 21:51:29'!
-newWithFirstCustomer: aCustomerName
+!CustomerBook class methodsFor: 'initialization' stamp: 'MR 11/5/2020 17:01:07'!
+newWithFirstCustomerNamed: aCustomerName
 	| customerBook |
 	customerBook := self new.
 	customerBook addCustomerNamed: aCustomerName.
