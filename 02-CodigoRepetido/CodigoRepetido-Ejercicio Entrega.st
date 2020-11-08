@@ -21,150 +21,154 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/2/2020 21:34:01'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 17:24:52'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
 	| customerBook |
 	customerBook := CustomerBook new.
 	
-	self testThatCollaborations: [customerBook addCustomerNamed: 'John Lennon'.] shouldNotTakeMoreMillisecondsThan: 50
+	self testThatCollaborations: [customerBook addCustomerNamed: 'John Lennon'.] shouldNotTakeLongerThan: 50 * millisecond
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 17:24:59'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
 	| customerBook paulMcCartney |
 	
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: paulMcCartney.
 
-	self testThatCollaborations: [customerBook removeCustomerNamed: paulMcCartney.] shouldNotTakeMoreMillisecondsThan: 100
+	self testThatCollaborations: [customerBook removeCustomerNamed: paulMcCartney.] shouldNotTakeLongerThan: 100 * millisecond
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 19:21:19'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 19:10:23'!
 test03CanNotAddACustomerWithEmptyName 
 
-	| customerBook |
+	| customerBook collaborationsToTest collaborationsToRunOnError |
 			
 	customerBook := CustomerBook new.
-
-	[ customerBook addCustomerNamed: ''.
-	self fail ]
-		on: Error 
-		do: [ :anError | 
-			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
-			self assert: customerBook isEmpty ].
+	
+	collaborationsToTest := [customerBook addCustomerNamed: ''].
+	collaborationsToRunOnError := [:anError | self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
+							self assert: customerBook isEmpty].
+		
+	self testThatCollaborations: collaborationsToTest failWithError: Error ifSoDo: collaborationsToRunOnError
 		
 		! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 19:10:13'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	| customerBook johnLennon testAction firstCondition secondCondition |
+	| customerBook johnLennon collaborationsToTest collaborationsToRunOnError |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
-	testAction := [customerBook removeCustomerNamed: 'Paul McCartney'].
-	firstCondition := [customerBook numberOfCustomers = 1].
-	secondCondition := [customerBook includesCustomerNamed: johnLennon].
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: johnLennon.
+	
+	collaborationsToTest := [customerBook removeCustomerNamed: 'Paul McCartney'].
+	collaborationsToRunOnError := [self assert: customerBook numberOfCustomers = 1.
+							self assert: (customerBook includesCustomerNamed: johnLennon)].
 	
 	
-	self testFailureOf: testAction withError: NotFound withConditions: firstCondition and: secondCondition
+	self testThatCollaborations: collaborationsToTest failWithError: NotFound ifSoDo: collaborationsToRunOnError
 
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 18:37:50'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
-	
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
-	self testThatBook: customerBook containsActiveCustomers: 0 andSuspendedCustomers: 1 forATotalOf: 1 andAlsoTestThat: [customerBook includesCustomerNamed: paulMcCartney].
+	
+	self testThatBook: customerBook containsActiveCustomers: 0 SuspendedCustomers: 1 forATotalOf: 1. 	
+	self assert: (customerBook includesCustomerNamed: paulMcCartney).
 	
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 19:09:03'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
 
 	paulMcCartney := 'Paul McCartney'.	
-	customerBook := CustomerBook newWithFirstCustomerNamed: paulMcCartney.
-	
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
-		self testThatBook: customerBook containsActiveCustomers: 0 andSuspendedCustomers: 0 forATotalOf: 0 andAlsoTestThat: [(customerBook includesCustomerNamed: paulMcCartney) not].
+	
+	self testThatBook: customerBook containsActiveCustomers: 0 SuspendedCustomers: 0 forATotalOf: 0.
+	self deny: (customerBook includesCustomerNamed: paulMcCartney).
 
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 19:08:44'!
 test07CanNotSuspendAnInvalidCustomer
 		
-	| customerBook johnLennon testAction firstCondition secondCondition |
+	| customerBook johnLennon collaborationsToTest collaborationsToRunOnError |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
-	testAction := [customerBook suspendCustomerNamed: 'Ringo Starr'].
-	firstCondition := [customerBook numberOfCustomers = 1].
-	secondCondition := [customerBook includesCustomerNamed: johnLennon].
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: johnLennon.
 	
+	collaborationsToTest := [customerBook suspendCustomerNamed: 'Ringo Starr'].
+	collaborationsToRunOnError := [self assert: customerBook numberOfCustomers = 1.
+							self assert: (customerBook includesCustomerNamed: johnLennon)].
 	
-	self testFailureOf: testAction withError: CantSuspend withConditions: firstCondition and: secondCondition
+	self testThatCollaborations: collaborationsToTest failWithError: CantSuspend ifSoDo: collaborationsToRunOnError
+	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/5/2020 17:01:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'MR 11/8/2020 19:08:52'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 		
-	| customerBook johnLennon testAction firstCondition secondCondition |
+	| customerBook johnLennon collaborationsToTest collaborationsToRunOnError |
 	
 	johnLennon := 'John Lennon'.
-	customerBook := CustomerBook newWithFirstCustomerNamed: johnLennon.
+	customerBook := CustomerBook new.
+	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
-	testAction := [customerBook suspendCustomerNamed: johnLennon].
-	firstCondition := [customerBook numberOfCustomers = 1].
-	secondCondition := [customerBook includesCustomerNamed: johnLennon].
 	
+	collaborationsToTest := [customerBook suspendCustomerNamed: johnLennon].
+	collaborationsToRunOnError := [self assert: customerBook numberOfCustomers = 1.
+							self assert: (customerBook includesCustomerNamed: johnLennon)].
 	
-	self testFailureOf: testAction withError: CantSuspend withConditions: firstCondition and: secondCondition
+	self testThatCollaborations: collaborationsToTest failWithError: CantSuspend ifSoDo: collaborationsToRunOnError
 		
 		
 ! !
 
 
-!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/3/2020 14:53:30'!
-testFailureOf: collaborationsToTest withError: error withConditions: firstCondition and: secondCondition 
-	
-	[ collaborationsToTest value.
-	self fail ]
-		on: error 
-		do: [ :anError | 
-			self assert: firstCondition value.
-			self assert: secondCondition value].! !
-
-!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/3/2020 15:39:49'!
-testThatBook: customerBook containsActiveCustomers: numberOfActiveCustomers andSuspendedCustomers: numberOfSuspendedCustomers forATotalOf: numberOfCustomers andAlsoTestThat: additionalTest
+!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/8/2020 18:36:07'!
+testThatBook: customerBook containsActiveCustomers: numberOfActiveCustomers SuspendedCustomers: numberOfSuspendedCustomers forATotalOf: numberOfCustomers
 
 	self assert: numberOfActiveCustomers equals: customerBook numberOfActiveCustomers.
 	self assert: numberOfSuspendedCustomers equals: customerBook numberOfSuspendedCustomers.
-	self assert: numberOfCustomers equals: customerBook numberOfCustomers.
-	self assert: additionalTest value.! !
+	self assert: numberOfCustomers equals: customerBook numberOfCustomers.! !
 
-!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/2/2020 21:31:07'!
-testThatCollaborations: collaborationsToMeasure shouldNotTakeMoreMillisecondsThan: maxTimeInMilliseconds
-	| millisecondsBeforeRunning millisecondsAfterRunning |
-	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
-	collaborationsToMeasure value.
-	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
+!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/8/2020 18:27:28'!
+testThatCollaborations: collaborationsToTest failWithError: error ifSoDo: collaborationsToRunOnError
+	[ collaborationsToTest value.
+	self fail ]
+		on: error 
+		do: [  :anError |
+			collaborationsToRunOnError valueWithPossibleArgs: {anError} ].! !
+
+!CustomerBookTest methodsFor: 'asserts' stamp: 'MR 11/8/2020 18:43:09'!
+testThatCollaborations: collaborationsToMeasure shouldNotTakeLongerThan: maxTime
+	| timeTaken |
+	timeTaken := 	collaborationsToMeasure timeToRun.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (maxTimeInMilliseconds * millisecond)! !
+	self assert: timeTaken < maxTime! !
 
 
 !classDefinition: #CustomerBook category: 'CodigoRepetido-Ejercicio'!
@@ -196,10 +200,10 @@ removeCustomerNamed: aName
 	^aName.
 ! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
+!CustomerBook methodsFor: 'customer management' stamp: 'MR 11/8/2020 17:17:50'!
 suspendCustomerNamed: aName 
 	
-	(active includes: aName) ifFalse: [^CantSuspend signal].
+	(self includesActiveCustomerNamed: aName) ifFalse: [^CantSuspend signal].
 	
 	active remove: aName.
 	
@@ -212,10 +216,10 @@ numberOfActiveCustomers
 	
 	^active size! !
 
-!CustomerBook methodsFor: 'accessing' stamp: 'NR 4/3/2019 10:14:26'!
+!CustomerBook methodsFor: 'accessing' stamp: 'MR 11/8/2020 17:11:01'!
 numberOfCustomers
 	
-	^active size + suspended size! !
+	^self numberOfActiveCustomers  + self numberOfSuspendedCustomers ! !
 
 !CustomerBook methodsFor: 'accessing' stamp: 'NR 9/19/2018 17:36:09'!
 numberOfSuspendedCustomers
@@ -223,10 +227,20 @@ numberOfSuspendedCustomers
 	^suspended size! !
 
 
-!CustomerBook methodsFor: 'testing' stamp: 'NR 4/3/2019 10:14:26'!
+!CustomerBook methodsFor: 'testing' stamp: 'MR 11/8/2020 17:14:09'!
+includesActiveCustomerNamed: aName
+
+	^active includes: aName! !
+
+!CustomerBook methodsFor: 'testing' stamp: 'MR 11/8/2020 17:15:52'!
 includesCustomerNamed: aName
 
-	^(active includes: aName) or: [ suspended includes: aName ]! !
+	^(self includesActiveCustomerNamed: aName) or: [self includesSuspendedCustomerNamed: aName]! !
+
+!CustomerBook methodsFor: 'testing' stamp: 'MR 11/8/2020 17:14:18'!
+includesSuspendedCustomerNamed: aName
+
+	^suspended includes: aName! !
 
 !CustomerBook methodsFor: 'testing' stamp: 'NR 4/3/2019 10:14:26'!
 isEmpty
@@ -260,10 +274,3 @@ customerCanNotBeEmptyErrorMessage
 
 	^'Customer Name Cannot Be Empty'! !
 
-
-!CustomerBook class methodsFor: 'initialization' stamp: 'MR 11/5/2020 17:01:07'!
-newWithFirstCustomerNamed: aCustomerName
-	| customerBook |
-	customerBook := self new.
-	customerBook addCustomerNamed: aCustomerName.
-	^customerBook! !
