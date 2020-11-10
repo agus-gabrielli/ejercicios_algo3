@@ -1,4 +1,4 @@
-!classDefinition: #NumeroTest category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: #NumeroTest category: 'Numeros-Parte1-Ejercicio'!
 TestCase subclass: #NumeroTest
 	instanceVariableNames: 'zero one two four oneFifth oneHalf five twoFifth twoTwentyfifth fiveHalfs three eight negativeOne negativeTwo'
 	classVariableNames: ''
@@ -128,50 +128,30 @@ setUp
 	! !
 
 
-!classDefinition: #Numero category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: #Numero category: 'Numeros-Parte1-Ejercicio'!
 Object subclass: #Numero
 	instanceVariableNames: 'type value numerator denominator'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'LL 9/13/2020 16:33:53'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'AG 11/9/2020 20:49:46'!
 * aMultiplier 
 
-	type = #Entero ifTrue:	
-		[ ^self class with: value * aMultiplier integerValue ].
-		
-	type = #Fraccion ifTrue:
-		[ ^self class with: (numerator * aMultiplier numerator) over: (denominator * aMultiplier denominator) ].
-		
-	self error: 'Tipo de número no soportado'
+	self subclassResponsibility 
+	
 	! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'LL 9/13/2020 16:35:06'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'AG 11/9/2020 20:57:11'!
 + anAdder 
 	
-	type = #Entero ifTrue:
-		[ ^self class with: value + anAdder integerValue ].
-	
-	type = #Fraccion ifTrue:
-		[ | newNumerator newDenominator |
-		
-		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-		newDenominator := denominator * anAdder denominator.
-		
-		^ self class with: newNumerator over: newDenominator ].
-	
-	self error: 'Tipo de número no soportado'
+	self subclassResponsibility.
 	! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'LL 9/13/2020 16:35:23'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'AG 11/9/2020 20:58:04'!
 negated
 	
-	type = #Entero ifTrue:
-		[ ^self * (self class with: -1) ].
-		
-	type = #Fraccion ifTrue:
-		[ ^self class with: numerator * (self class with: -1) over: denominator ].! !
+	self subclassResponsibility.! !
 
 
 !Numero methodsFor: 'testing' stamp: 'NR 9/8/2019 22:00:09'!
@@ -291,7 +271,7 @@ greatestCommonDivisorWith: anEntero
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Numero class' category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: 'Numero class' category: 'Numeros-Parte1-Ejercicio'!
 Numero class
 	instanceVariableNames: ''!
 
@@ -301,13 +281,13 @@ canNotDivideByZeroErrorDescription
 	^'No se puede dividir por cero'! !
 
 
-!Numero class methodsFor: 'instance creation' stamp: 'NR 9/8/2019 20:46:40'!
+!Numero class methodsFor: 'instance creation' stamp: 'AG 11/9/2020 21:19:30'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
 	
-	^self new initializeWith: aValue! !
+	^Entero new initializeWith: aValue! !
 
 !Numero class methodsFor: 'instance creation' stamp: 'NR 9/8/2019 23:20:40'!
 with: aDividend over: aDivisor
@@ -326,3 +306,56 @@ with: aDividend over: aDivisor
 	denominator isOne ifTrue: [ ^numerator ].
 
 	^self new initializeWith: numerator over: denominator! !
+
+
+!classDefinition: #Entero category: 'Numeros-Parte1-Ejercicio'!
+Numero subclass: #Entero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte1-Ejercicio'!
+
+!Entero methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 20:38:51'!
+* aMultiplier 
+
+	^self class with: value * aMultiplier integerValue.
+	! !
+
+!Entero methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 21:56:03'!
++ anAdder 
+	
+	^self class with: value + anAdder integerValue.! !
+
+!Entero methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 20:57:32'!
+Negated
+
+	^self * (self class with: -1)! !
+
+
+!classDefinition: #Fraccion category: 'Numeros-Parte1-Ejercicio'!
+Numero subclass: #Fraccion
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte1-Ejercicio'!
+
+!Fraccion methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 20:39:09'!
+* aMultiplier
+
+	^self class with: (numerator * aMultiplier numerator) over: (denominator * aMultiplier denominator).
+
+! !
+
+!Fraccion methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 20:56:49'!
++ anAdder
+		| newNumerator newDenominator |
+		
+		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
+		newDenominator := denominator * anAdder denominator.
+		
+		^ self class with: newNumerator over: newDenominator! !
+
+!Fraccion methodsFor: 'as yet unclassified' stamp: 'AG 11/9/2020 20:57:52'!
+Negated
+
+	^self class with: numerator * (self class with: -1) over: denominator.! !
