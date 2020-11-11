@@ -35,7 +35,7 @@ test06EnteroMultipliesWithEnteroCorrectly
 
 	self assert: two * two equals: four! !
 
-!NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:15:37'!
+!NumeroTest methodsFor: 'tests' stamp: 'AG 11/11/2020 20:44:47'!
 test07FraccionAddsWithFraccionCorrectly
 "
     La suma de fracciones es:
@@ -47,7 +47,7 @@ test07FraccionAddsWithFraccionCorrectly
 "
 	| sevenTenths |
 
-	sevenTenths := Numero with: (Numero with: 7) over: (Numero with: 10).
+	sevenTenths := Fraccion with: (Entero with: 7) over: (Entero with: 10).
 
 	self assert: oneFifth + oneHalf equals: sevenTenths! !
 
@@ -61,10 +61,10 @@ test08FraccionMultipliesWithFraccionCorrectly
 
 	self assert: oneFifth * twoFifth equals: twoTwentyfifth! !
 
-!NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:16:19'!
+!NumeroTest methodsFor: 'tests' stamp: 'AG 11/11/2020 20:44:55'!
 test09AparentFraccionesAreEqual
 
-	self assert: oneHalf equals: (Numero with: two over: four)! !
+	self assert: oneHalf equals: (Fraccion with: two over: four)! !
 
 !NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:12:46'!
 test10AddingFraccionesCanReturnAnEntero
@@ -91,40 +91,40 @@ test14NegationOfEnteroIsCorrect
 
 	self assert: two negated equals: negativeTwo.! !
 
-!NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:44:24'!
+!NumeroTest methodsFor: 'tests' stamp: 'AG 11/11/2020 20:45:05'!
 test15NegationOfFraccionIsCorrect
 
-	self assert: oneHalf negated equals: (Numero with: negativeOne over: two)! !
+	self assert: oneHalf negated equals: (Fraccion with: negativeOne over: two)! !
 
-!NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:29:45'!
+!NumeroTest methodsFor: 'tests' stamp: 'AG 11/11/2020 20:45:10'!
 test16SignIsCorrectlyAssignedToFractionWithTwoNegatives
 
-	self assert: oneHalf equals: (Numero with: negativeOne over: negativeTwo)! !
+	self assert: oneHalf equals: (Fraccion with: negativeOne over: negativeTwo)! !
 
-!NumeroTest methodsFor: 'tests' stamp: 'NR 9/8/2019 21:30:07'!
+!NumeroTest methodsFor: 'tests' stamp: 'AG 11/11/2020 20:45:15'!
 test17SignIsCorrectlyAssignedToFractionWithNegativeDivisor
 
-	self assert: oneHalf negated equals: (Numero with: one over: negativeTwo)! !
+	self assert: oneHalf negated equals: (Fraccion with: one over: negativeTwo)! !
 
 
-!NumeroTest methodsFor: 'setup' stamp: 'NR 9/8/2019 21:09:34'!
+!NumeroTest methodsFor: 'setup' stamp: 'AG 11/11/2020 20:43:05'!
 setUp
 
-	zero := Numero with: 0.
-	one := Numero with: 1.
-	two := Numero with: 2.
-	three:= Numero with: 3.
-	four := Numero with: 4.
-	five := Numero with: 5.
-	eight := Numero with: 8.
-	negativeOne := Numero with: -1.
-	negativeTwo := Numero with: -2.
+	zero := Entero with: 0.
+	one := Entero with: 1.
+	two := Entero with: 2.
+	three:= Entero with: 3.
+	four := Entero with: 4.
+	five := Entero with: 5.
+	eight := Entero with: 8.
+	negativeOne := Entero with: -1.
+	negativeTwo := Entero with: -2.
 	
-	oneHalf := Numero with: one over: two.
-	oneFifth := Numero with: one over: five.
-	twoFifth := Numero with: two over: five.
-	twoTwentyfifth := Numero with: two over: (Numero with: 25).
-	fiveHalfs := Numero with: five over: two.
+	oneHalf := Fraccion with: one over: two.
+	oneFifth := Fraccion with: one over: five.
+	twoFifth := Fraccion with: two over: five.
+	twoTwentyfifth := Fraccion with: two over: (Entero with: 25).
+	fiveHalfs := Fraccion with: five over: two.
 	! !
 
 
@@ -197,33 +197,6 @@ canNotDivideByZeroErrorDescription
 
 	^'No se puede dividir por cero'! !
 
-
-!Numero class methodsFor: 'instance creation' stamp: 'AG 11/11/2020 19:57:10'!
-with: aValue 
-	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
-	^Entero new initializeWith: aValue! !
-
-!Numero class methodsFor: 'instance creation' stamp: 'AG 11/11/2020 19:57:23'!
-with: aDividend over: aDivisor
-
-	| greatestCommonDivisor numerator denominator |
-	
-	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aDividend isZero ifTrue: [ ^aDividend ].
-	
-	aDivisor isNegative ifTrue: [ ^self with: aDividend negated over: aDivisor negated].
-	
-	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
-	numerator := aDividend // greatestCommonDivisor.
-	denominator := aDivisor // greatestCommonDivisor.
-	
-	denominator isOne ifTrue: [ ^numerator ].
-
-	^Fraccion new initializeWith: numerator over: denominator! !
-
 
 !classDefinition: #Entero category: 'Numeros-Parte1-Ejercicio'!
 Numero subclass: #Entero
@@ -277,10 +250,10 @@ printOn: aStream
 	aStream print: value.! !
 
 
-!Entero methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:18:11'!
+!Entero methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:47:45'!
 = anObject
 
-	^value = anObject integerValue.! !
+	^(anObject isKindOf: self class) and: [value = anObject integerValue].! !
 
 !Entero methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:16:08'!
 hash
@@ -306,6 +279,20 @@ integerValue
 	"Usamos integerValue en vez de value para que no haya problemas con el mensaje value implementado en Object - Hernan"
 	
 	^value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Entero class' category: 'Numeros-Parte1-Ejercicio'!
+Entero class
+	instanceVariableNames: ''!
+
+!Entero class methodsFor: 'as yet unclassified' stamp: 'AG 11/11/2020 20:41:32'!
+with: aValue 
+	
+	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
+	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
+	
+	^self new initializeWith: aValue! !
 
 
 !classDefinition: #Fraccion category: 'Numeros-Parte1-Ejercicio'!
@@ -340,10 +327,10 @@ printOn: aStream
 			print: denominator.! !
 
 
-!Fraccion methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:18:26'!
+!Fraccion methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:48:15'!
 = anObject
 
-	^(numerator * anObject denominator) = (denominator * anObject numerator).! !
+	^(anObject isKindOf: self class) and: [(numerator * anObject denominator) = (denominator * anObject numerator)].! !
 
 !Fraccion methodsFor: 'comparing' stamp: 'AG 11/11/2020 20:16:20'!
 hash
@@ -365,10 +352,10 @@ hash
 	
 	^ self class with: newNumerator over: newDenominator! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'AG 11/11/2020 19:55:48'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'AG 11/11/2020 20:50:46'!
 negated
 	
-	^self class with: numerator * (self class with: -1) over: denominator.! !
+	^self class with: numerator * (Entero with: -1) over: denominator.! !
 
 
 !Fraccion methodsFor: 'initialization' stamp: 'AG 11/11/2020 20:11:13'!
@@ -391,3 +378,27 @@ denominator
 numerator
 
 	^numerator! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Fraccion class' category: 'Numeros-Parte1-Ejercicio'!
+Fraccion class
+	instanceVariableNames: ''!
+
+!Fraccion class methodsFor: 'as yet unclassified' stamp: 'AG 11/11/2020 20:42:06'!
+with: aDividend over: aDivisor
+
+	| greatestCommonDivisor numerator denominator |
+	
+	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
+	aDividend isZero ifTrue: [ ^aDividend ].
+	
+	aDivisor isNegative ifTrue: [ ^self with: aDividend negated over: aDivisor negated].
+	
+	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
+	numerator := aDividend // greatestCommonDivisor.
+	denominator := aDivisor // greatestCommonDivisor.
+	
+	denominator isOne ifTrue: [ ^numerator ].
+
+	^self new initializeWith: numerator over: denominator! !
