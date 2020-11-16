@@ -413,8 +413,9 @@ integerValue
 	^value! !
 
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:28:33'!
-* aMultiplier 
+!Entero methodsFor: 'arithmetic operations' stamp: 'MR 11/15/2020 23:02:58'!
+* aMultiplier
+ 
 	^aMultiplier multiplyEntero: self! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:29:05'!
@@ -429,8 +430,9 @@ integerValue
 	
 	^aSubtrahend substractToEntero: self! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:18:20'!
-/ aDivisor 
+!Entero methodsFor: 'arithmetic operations' stamp: 'MR 11/15/2020 23:03:09'!
+/ aDivisor
+ 
 	^aDivisor divideEntero: self! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
@@ -591,8 +593,9 @@ numerator
 	
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:29:23'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'MR 11/15/2020 23:02:44'!
 + anAdder 
+
 	^anAdder addToFraccion: self! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:24:26'!
@@ -600,8 +603,9 @@ numerator
 	
 	^aSubtrahend substractToFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'AG 11/15/2020 22:25:15'!
-/ aDivisor 
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'MR 11/15/2020 23:03:29'!
+/ aDivisor
+ 
 	^aDivisor divideFraccion: self	! !
 
 
