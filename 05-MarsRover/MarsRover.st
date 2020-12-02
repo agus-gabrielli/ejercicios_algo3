@@ -5,21 +5,15 @@ TestCase subclass: #MarsRoverTest
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'MR 11/30/2020 21:43:50'!
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'MR 12/2/2020 15:06:59'!
 test01RoverThatHasntMovedIsInStartingLocation
 	
-	| Rover |
-	Rover := MarsRover newInLocation: 1@1 pointing: #N.
+	| rover |
+	rover := MarsRover newInCoordinates: 1@1 facing: #N.
 	
-	self assert: Rover currentPosition = (1@1) .! !
-
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'MR 11/30/2020 21:52:58'!
-test02RoverThatHasntRotatedIsPointingTheSameDirection
+	rover processComands: ''.
 	
-	| Rover |
-	Rover := MarsRover newInLocation: 1@1 pointing: #N.
-	
-	self assert: Rover currentFacing = #N .! !
+	self assert: (rover isInCoordinates: (1@1) facing: #N).! !
 
 
 !classDefinition: #MarsRover category: 'MarsRover'!
@@ -29,21 +23,21 @@ Object subclass: #MarsRover
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRover methodsFor: 'initialization' stamp: 'MR 11/30/2020 21:49:05'!
-initializeNewInLocation: coordinates pointing: cardinalDirection
+!MarsRover methodsFor: 'initialization' stamp: 'MR 12/2/2020 15:12:34'!
+initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection
  
-	currentCoordinates := coordinates.
-	currentCardinalDirection := cardinalDirection.! !
+	currentCoordinates := aSetOfCoordinates.
+	currentCardinalDirection := aCardinalDirection.! !
 
 
-!MarsRover methodsFor: 'positioning' stamp: 'MR 11/30/2020 21:54:12'!
-currentFacing
-	^#N! !
+!MarsRover methodsFor: 'command procesing' stamp: 'MR 12/2/2020 15:13:31'!
+processComands: aChainOfCommands 
+	! !
 
-!MarsRover methodsFor: 'positioning' stamp: 'MR 11/30/2020 21:49:37'!
-currentPosition
-	
-	^1@1! !
+
+!MarsRover methodsFor: 'testing' stamp: 'MR 12/2/2020 15:10:08'!
+isInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
+	^true! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -51,7 +45,7 @@ currentPosition
 MarsRover class
 	instanceVariableNames: ''!
 
-!MarsRover class methodsFor: 'instance creation' stamp: 'MR 11/30/2020 21:45:23'!
-newInLocation: coordinates pointing: cardinalDirection 
+!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 15:11:21'!
+newInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
 	
-	^self new initializeNewInLocation: coordinates pointing: cardinalDirection ! !
+	^self new initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection! !
