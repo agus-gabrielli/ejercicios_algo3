@@ -5,87 +5,87 @@ TestCase subclass: #MarsRoverTest
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:09:49'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test01RoverThatWasntCommandedToMoveIsInStartingLocation
 	
-	marsRover processComands: ''.
+	marsRover processCommands: ''.
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: north).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:03'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test02RoverThatWasntCommandedToMoveIsNotInIncorrectPosition
 	
-	marsRover processComands: ''.
+	marsRover processCommands: ''.
 	
 	self deny: (marsRover isInCoordinates: (1@2) facing: north).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:09'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test03RoverThatWasntCommandedToRotateIsNotFacingAnotherDirection
 
-	marsRover processComands: ''.
+	marsRover processCommands: ''.
 	
 	self deny: (marsRover isInCoordinates: (1@1) facing: south).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:15'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test04RoverThatWasCommandedToMoveForwardIsInExpectedPosition
 	
-	marsRover processComands: 'f'.
+	marsRover processCommands: 'f'.
 	
 	self assert: (marsRover isInCoordinates: (1@2) facing: north).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:25'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test05RoverThatWasCommandedToMoveBackwardsIsInExpectedPosition
 	
-	marsRover processComands: 'b'.
+	marsRover processCommands: 'b'.
 	
 	self assert: (marsRover isInCoordinates: (1@0) facing: north).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:32'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test06RoverThatWasCommandedToRotateLeftIsFacingTheExpectedDirection
 	
-	marsRover processComands: 'l'.
+	marsRover processCommands: 'l'.
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: west).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:38'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test07RoverThatWasCommandedToRotateRightIsFacingTheExpectedDirection
 	
-	marsRover processComands: 'r'.
+	marsRover processCommands: 'r'.
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: east).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:43'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test08RoverThatWasCommandedToMoveMultipleTimesIsInExpectedPosition
 	
-	marsRover processComands: 'fffbbf'.
+	marsRover processCommands: 'fffbbf'.
 	
 	self assert: (marsRover isInCoordinates: (1@3) facing: north).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:50'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test09RoverThatWasCommandedToRotateRightMultipleTimesIsFacingTheExpectedDirection
 	
-	marsRover processComands: 'rrr'.
+	marsRover processCommands: 'rrr'.
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: west).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/2/2020 22:10:56'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test10RoverThatWasCommandedToRotateMultipleTimesIsFacingTheExpectedDirection
 	
-	marsRover processComands: 'lllr'.
+	marsRover processCommands: 'lllr'.
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: south).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 16:57:17'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test11RoverThatWasCommandedToMoveAndRotateMultipleTimesIsPositionedCorrectly
 	
-	marsRover processComands: 'lfrbbllffr'.
+	marsRover processCommands: 'lfrbbllffr'.
 	
 	self assert: (marsRover isInCoordinates: (0@-3) facing: west).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 16:48:45'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:38:56'!
 test12RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCommand
 	
-	self should: [marsRover processComands: 'fflblalffrff']
+	self should: [marsRover processCommands: 'fflblalffrff']
 		raise: Error
 		withExceptionDo: [:anError | self assert: anError messageText equals: 'Invalid Command'.
 							self assert: (marsRover isInCoordinates: (2@3) facing: south)]	.! !
@@ -267,10 +267,10 @@ initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection
 	currentCardinalDirection := aCardinalDirection.! !
 
 
-!MarsRover methodsFor: 'command procesing' stamp: 'AG 12/2/2020 23:04:09'!
-processComands: aChainOfCommands 
+!MarsRover methodsFor: 'command procesing' stamp: 'AG 12/3/2020 17:39:36'!
+processCommands: aChainOfCommands 
 	
-	aChainOfCommands do: [:aCommandIdentifier | self processComand: aCommandIdentifier ].! !
+	aChainOfCommands do: [:aCommandIdentifier | self processCommand: aCommandIdentifier ].! !
 
 
 !MarsRover methodsFor: 'movement' stamp: 'MR 12/2/2020 23:48:19'!
@@ -294,8 +294,8 @@ rotateRight
 	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight! !
 
 
-!MarsRover methodsFor: 'private' stamp: 'MR 12/2/2020 23:18:01'!
-processComand: aCommandIdentifier
+!MarsRover methodsFor: 'private' stamp: 'AG 12/3/2020 17:39:36'!
+processCommand: aCommandIdentifier
 	
 	| aCommand |
 	aCommand := MarsRoverCommand newFor: aCommandIdentifier.
