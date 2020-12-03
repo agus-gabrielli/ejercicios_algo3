@@ -75,8 +75,15 @@ test10RoverThatWasCommandedToRotateMultipleTimesIsFacingTheExpectedDirection
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: south).! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/3/2020 00:00:56'!
-test11RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCommand
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 16:57:17'!
+test11RoverThatWasCommandedToMoveAndRotateMultipleTimesIsPositionedCorrectly
+	
+	marsRover processComands: 'lfrbbllffr'.
+	
+	self assert: (marsRover isInCoordinates: (0@-3) facing: west).! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 16:48:45'!
+test12RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCommand
 	
 	self should: [marsRover processComands: 'fflblalffrff']
 		raise: Error
@@ -102,13 +109,13 @@ Object subclass: #CardinalDirections
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:36'!
-cardinalDirectionAtMyLeft
+!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
+cardinalDirectionOnYourLeft
 
 	^self subclassResponsibility! !
 
-!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:58'!
-cardinalDirectionAtMyRight
+!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
+cardinalDirectionOnYourRight
 
 	^self subclassResponsibility! !
 
@@ -137,13 +144,13 @@ CardinalDirections subclass: #East
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!East methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:36'!
-cardinalDirectionAtMyLeft
+!East methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
+cardinalDirectionOnYourLeft
 
 	^North new.! !
 
-!East methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:58'!
-cardinalDirectionAtMyRight
+!East methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
+cardinalDirectionOnYourRight
 
 	^South new.! !
 
@@ -166,13 +173,13 @@ CardinalDirections subclass: #North
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!North methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:36'!
-cardinalDirectionAtMyLeft
+!North methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
+cardinalDirectionOnYourLeft
 
 	^West new.! !
 
-!North methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:58'!
-cardinalDirectionAtMyRight
+!North methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
+cardinalDirectionOnYourRight
 
 	^East new.! !
 
@@ -195,13 +202,13 @@ CardinalDirections subclass: #South
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!South methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:36'!
-cardinalDirectionAtMyLeft
+!South methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
+cardinalDirectionOnYourLeft
 
 	^East new.! !
 
-!South methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:58'!
-cardinalDirectionAtMyRight
+!South methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
+cardinalDirectionOnYourRight
 
 	^West new.! !
 
@@ -224,13 +231,13 @@ CardinalDirections subclass: #West
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!West methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:36'!
-cardinalDirectionAtMyLeft
+!West methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
+cardinalDirectionOnYourLeft
 	
 	^South new.! !
 
-!West methodsFor: 'direction changing' stamp: 'AG 12/2/2020 22:53:58'!
-cardinalDirectionAtMyRight
+!West methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
+cardinalDirectionOnYourRight
 	
 	^North new.! !
 
@@ -276,15 +283,15 @@ moveForward
 
 	currentCoordinates := currentCoordinates + currentCardinalDirection forwardMovementUnitVector! !
 
-!MarsRover methodsFor: 'movement' stamp: 'AG 12/2/2020 22:53:36'!
+!MarsRover methodsFor: 'movement' stamp: 'AG 12/3/2020 16:44:08'!
 rotateLeft
 
-	currentCardinalDirection := currentCardinalDirection cardinalDirectionAtMyLeft! !
+	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourLeft! !
 
-!MarsRover methodsFor: 'movement' stamp: 'AG 12/2/2020 22:53:58'!
+!MarsRover methodsFor: 'movement' stamp: 'AG 12/3/2020 16:44:25'!
 rotateRight
 
-	currentCardinalDirection := currentCardinalDirection cardinalDirectionAtMyRight! !
+	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight! !
 
 
 !MarsRover methodsFor: 'private' stamp: 'MR 12/2/2020 23:18:01'!
@@ -338,16 +345,16 @@ isIdentifiedBy: aCommandIdentifier
 
 	self subclassResponsibility ! !
 
-!MarsRoverCommand class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 23:22:26'!
+!MarsRoverCommand class methodsFor: 'instance creation' stamp: 'AG 12/3/2020 17:04:41'!
 newFor: aCommandIdentificator
 
-	| subclassToInstantiate | 
+	| aCommandToInstantiate | 
 	
-	subclassToInstantiate := MarsRoverCommand allSubclasses detect: 
+	aCommandToInstantiate := MarsRoverCommand allSubclasses detect: 
 			[ :aCommand | aCommand isIdentifiedBy: aCommandIdentificator]
-			ifNone: [^InvalidCommand new].
+			ifNone: [aCommandToInstantiate := InvalidCommand].
 	
-	^subclassToInstantiate new. ! !
+	^aCommandToInstantiate new. ! !
 
 
 !classDefinition: #InvalidCommand category: 'MarsRover'!
