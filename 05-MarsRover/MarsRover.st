@@ -273,17 +273,35 @@ processCommands: aChainOfCommands
 	aChainOfCommands do: [ :aCommandIdentifier | self processCommand: aCommandIdentifier ].! !
 
 
-!MarsRover methodsFor: 'private' stamp: 'AG 12/3/2020 17:42:33'!
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:47'!
+moveBackward
+
+	currentCoordinates := currentCoordinates + 	currentCardinalDirection backwardMovementUnitVector! !
+
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:05:09'!
+moveForward
+
+	currentCoordinates := currentCoordinates + 	currentCardinalDirection forwardMovementUnitVector! !
+
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:05'!
 processCommand: aCommandIdentifier
 
-	aCommandIdentifier = $f ifTrue: [^currentCoordinates := currentCoordinates + 
-								currentCardinalDirection forwardMovementUnitVector ].
-	aCommandIdentifier = $b ifTrue: [^currentCoordinates := currentCoordinates + 
-								currentCardinalDirection backwardMovementUnitVector ].
-	aCommandIdentifier = $r ifTrue: [^currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight ].
-	aCommandIdentifier = $l ifTrue: [^currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourLeft ].
+	aCommandIdentifier = $f ifTrue: [^self moveForward ].
+	aCommandIdentifier = $b ifTrue: [^self moveBackward ].
+	aCommandIdentifier = $r ifTrue: [^self rotateRight ].
+	aCommandIdentifier = $l ifTrue: [^self rotateLeft ].
 	
 	self error: 'Invalid Command'.! !
+
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:55'!
+rotateLeft
+
+	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourLeft! !
+
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:07:02'!
+rotateRight
+
+	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight! !
 
 
 !MarsRover methodsFor: 'testing' stamp: 'AG 12/2/2020 22:22:00'!
@@ -297,7 +315,9 @@ isInCoordinates: aSetOfCoordinates facing: aCardinalDirection
 MarsRover class
 	instanceVariableNames: ''!
 
-!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 15:11:21'!
+!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/3/2020 18:04:03'!
 newInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
 	
+	aSetOfCoordinates isPoint ifFalse: [self error: 'Invalid Coordinates'].	
+	(aCardinalDirection isKindOf: CardinalDirections) ifFalse: [self error: 'Invalid Cardinal Direction']. 
 	^self new initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection! !

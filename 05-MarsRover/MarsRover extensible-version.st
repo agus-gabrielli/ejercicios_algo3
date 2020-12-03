@@ -91,14 +91,14 @@ test12RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCo
 							self assert: (marsRover isInCoordinates: (2@3) facing: south)]	.! !
 
 
-!MarsRoverTest methodsFor: 'setup' stamp: 'AG 12/2/2020 22:09:23'!
+!MarsRoverTest methodsFor: 'setup' stamp: 'MR 12/3/2020 17:54:03'!
 setUp
 	
 	north := North new.
 	south := South new.
 	east := East new.
 	west := West new.
-	marsRover := MarsRover newInCoordinates: (1@1) facing: north.
+	marsRover := MarsRover newInCoordinates: (1@1) facing: north
 	! !
 
 
@@ -273,8 +273,8 @@ processCommands: aChainOfCommands
 	aChainOfCommands do: [:aCommandIdentifier | self processCommand: aCommandIdentifier ].! !
 
 
-!MarsRover methodsFor: 'movement' stamp: 'MR 12/2/2020 23:48:19'!
-moveBackwards
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/3/2020 17:55:30'!
+moveBackward
 
 	currentCoordinates := currentCoordinates + currentCardinalDirection backwardMovementUnitVector! !
 
@@ -294,12 +294,11 @@ rotateRight
 	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight! !
 
 
-!MarsRover methodsFor: 'private' stamp: 'AG 12/3/2020 17:39:36'!
+!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 17:57:06'!
 processCommand: aCommandIdentifier
 	
 	| aCommand |
 	aCommand := MarsRoverCommand newFor: aCommandIdentifier.
-	aCommand ifNil: [^self error: aCommandIdentifier, ' is an Invalid command identifier.'].
 	aCommand executeCommandFor: self.
 	
 	! !
@@ -316,9 +315,11 @@ isInCoordinates: aSetOfCoordinates facing: aCardinalDirection
 MarsRover class
 	instanceVariableNames: ''!
 
-!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 15:11:21'!
+!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/3/2020 17:53:13'!
 newInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
 	
+	aSetOfCoordinates isPoint ifFalse: [self error: 'Invalid Coordinates'].	
+	(aCardinalDirection isKindOf: CardinalDirections) ifFalse: [self error: 'Invalid Cardinal Direction']. 
 	^self new initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection! !
 
 
@@ -381,25 +382,25 @@ isIdentifiedBy: aCommandIdentifier
 	^false! !
 
 
-!classDefinition: #MoveBackwards category: 'MarsRover'!
-MarsRoverCommand subclass: #MoveBackwards
+!classDefinition: #MoveBackward category: 'MarsRover'!
+MarsRoverCommand subclass: #MoveBackward
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MoveBackwards methodsFor: 'execution' stamp: 'AG 12/2/2020 23:00:33'!
+!MoveBackward methodsFor: 'execution' stamp: 'MR 12/3/2020 17:55:30'!
 executeCommandFor: aMarsRover
 
-	aMarsRover moveBackwards. ! !
+	aMarsRover moveBackward. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MoveBackwards class' category: 'MarsRover'!
-MoveBackwards class
+!classDefinition: 'MoveBackward class' category: 'MarsRover'!
+MoveBackward class
 	instanceVariableNames: ''!
 
-!MoveBackwards class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:47:43'!
+!MoveBackward class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:47:43'!
 isIdentifiedBy: aCommandIdentifier
 
 	^aCommandIdentifier = $b! !
