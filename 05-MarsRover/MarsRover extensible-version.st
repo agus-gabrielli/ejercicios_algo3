@@ -75,6 +75,14 @@ test10RoverThatWasCommandedToRotateMultipleTimesIsFacingTheExpectedDirection
 	
 	self assert: (marsRover isInCoordinates: (1@1) facing: south).! !
 
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/3/2020 00:00:56'!
+test11RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCommand
+	
+	self should: [marsRover processComands: 'fflblalffrff']
+		raise: Error
+		withExceptionDo: [:anError | self assert: anError messageText equals: 'Invalid Command'.
+							self assert: (marsRover isInCoordinates: (2@3) facing: south)]	.! !
+
 
 !MarsRoverTest methodsFor: 'setup' stamp: 'AG 12/2/2020 22:09:23'!
 setUp
@@ -110,6 +118,17 @@ cardinalDirectionAtMyRight
 
 	^self isKindOf: aCardinalDirection class! !
 
+
+!CardinalDirections methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:50:09'!
+backwardMovementUnitVector
+
+	^self subclassResponsibility ! !
+
+!CardinalDirections methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:50:13'!
+forwardMovementUnitVector
+
+	^self subclassResponsibility ! !
+
 
 !classDefinition: #East category: 'MarsRover'!
 CardinalDirections subclass: #East
@@ -127,6 +146,17 @@ cardinalDirectionAtMyLeft
 cardinalDirectionAtMyRight
 
 	^South new.! !
+
+
+!East methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:50:38'!
+backwardMovementUnitVector
+
+	^(-1@0)! !
+
+!East methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:51:37'!
+forwardMovementUnitVector
+
+	^(1@0)! !
 
 
 !classDefinition: #North category: 'MarsRover'!
@@ -146,6 +176,17 @@ cardinalDirectionAtMyRight
 
 	^East new.! !
 
+
+!North methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:52:17'!
+backwardMovementUnitVector
+	
+	^(0@-1)! !
+
+!North methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:52:24'!
+forwardMovementUnitVector
+	
+	^(0@1)! !
+
 
 !classDefinition: #South category: 'MarsRover'!
 CardinalDirections subclass: #South
@@ -164,6 +205,17 @@ cardinalDirectionAtMyRight
 
 	^West new.! !
 
+
+!South methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:53:55'!
+backwardMovementUnitVector
+
+	^(0@1)! !
+
+!South methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:04'!
+forwardMovementUnitVector
+
+	^(0@-1)! !
+
 
 !classDefinition: #West category: 'MarsRover'!
 CardinalDirections subclass: #West
@@ -181,6 +233,17 @@ cardinalDirectionAtMyLeft
 cardinalDirectionAtMyRight
 	
 	^North new.! !
+
+
+!West methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:38'!
+backwardMovementUnitVector
+	
+	^(1@0)! !
+
+!West methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:48'!
+forwardMovementUnitVector
+	
+	^(-1@0)! !
 
 
 !classDefinition: #MarsRover category: 'MarsRover'!
@@ -203,15 +266,15 @@ processComands: aChainOfCommands
 	aChainOfCommands do: [:aCommandIdentifier | self processComand: aCommandIdentifier ].! !
 
 
-!MarsRover methodsFor: 'movement' stamp: 'AG 12/2/2020 22:37:53'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/2/2020 23:48:19'!
 moveBackwards
 
-	currentCoordinates := currentCoordinates + (0@-1)! !
+	currentCoordinates := currentCoordinates + currentCardinalDirection backwardMovementUnitVector! !
 
-!MarsRover methodsFor: 'movement' stamp: 'AG 12/2/2020 22:37:42'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/2/2020 23:48:11'!
 moveForward
 
-	currentCoordinates := currentCoordinates + (0@1)! !
+	currentCoordinates := currentCoordinates + currentCardinalDirection forwardMovementUnitVector! !
 
 !MarsRover methodsFor: 'movement' stamp: 'AG 12/2/2020 22:53:36'!
 rotateLeft
@@ -224,11 +287,12 @@ rotateRight
 	currentCardinalDirection := currentCardinalDirection cardinalDirectionAtMyRight! !
 
 
-!MarsRover methodsFor: 'private' stamp: 'AG 12/2/2020 23:05:00'!
+!MarsRover methodsFor: 'private' stamp: 'MR 12/2/2020 23:18:01'!
 processComand: aCommandIdentifier
 	
 	| aCommand |
 	aCommand := MarsRoverCommand newFor: aCommandIdentifier.
+	aCommand ifNil: [^self error: aCommandIdentifier, ' is an Invalid command identifier.'].
 	aCommand executeCommandFor: self.
 	
 	! !
@@ -269,20 +333,45 @@ executeCommandFor: aMarsRover
 MarsRoverCommand class
 	instanceVariableNames: ''!
 
-!MarsRoverCommand class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:48:42'!
+!MarsRoverCommand class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:48:42'!
 isIdentifiedBy: aCommandIdentifier
 
 	self subclassResponsibility ! !
 
-!MarsRoverCommand class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:46:57'!
+!MarsRoverCommand class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 23:22:26'!
 newFor: aCommandIdentificator
 
 	| subclassToInstantiate | 
 	
 	subclassToInstantiate := MarsRoverCommand allSubclasses detect: 
-			[ :aCommand | aCommand isIdentifiedBy: aCommandIdentificator].
+			[ :aCommand | aCommand isIdentifiedBy: aCommandIdentificator]
+			ifNone: [^InvalidCommand new].
 	
 	^subclassToInstantiate new. ! !
+
+
+!classDefinition: #InvalidCommand category: 'MarsRover'!
+MarsRoverCommand subclass: #InvalidCommand
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!InvalidCommand methodsFor: 'execution' stamp: 'MR 12/3/2020 00:03:00'!
+executeCommandFor: aMarsRover
+
+	self error: 'Invalid Command'. ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'InvalidCommand class' category: 'MarsRover'!
+InvalidCommand class
+	instanceVariableNames: ''!
+
+!InvalidCommand class methodsFor: 'instance creation' stamp: 'MR 12/2/2020 23:23:22'!
+isIdentifiedBy: aCommandIdentifier
+
+	^false! !
 
 
 !classDefinition: #MoveBackwards category: 'MarsRover'!
@@ -303,7 +392,7 @@ executeCommandFor: aMarsRover
 MoveBackwards class
 	instanceVariableNames: ''!
 
-!MoveBackwards class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:47:43'!
+!MoveBackwards class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:47:43'!
 isIdentifiedBy: aCommandIdentifier
 
 	^aCommandIdentifier = $b! !
@@ -329,7 +418,7 @@ executeCommandFor: aMarsRover
 MoveForward class
 	instanceVariableNames: ''!
 
-!MoveForward class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:47:54'!
+!MoveForward class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:47:54'!
 isIdentifiedBy: aCommandIdentifier
 
 	^aCommandIdentifier = $f! !
@@ -353,7 +442,7 @@ executeCommandFor: aMarsRover
 RotateLeft class
 	instanceVariableNames: ''!
 
-!RotateLeft class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:48:03'!
+!RotateLeft class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:48:03'!
 isIdentifiedBy: aCommandIdentifier
 
 	^aCommandIdentifier = $l! !
@@ -377,7 +466,7 @@ executeCommandFor: aMarsRover
 RotateRight class
 	instanceVariableNames: ''!
 
-!RotateRight class methodsFor: 'as yet unclassified' stamp: 'AG 12/2/2020 22:48:11'!
+!RotateRight class methodsFor: 'instance creation' stamp: 'AG 12/2/2020 22:48:11'!
 isIdentifiedBy: aCommandIdentifier
 
 	^aCommandIdentifier = $r! !
