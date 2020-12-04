@@ -188,6 +188,22 @@ test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 	self deny: (account hasRegistered: withdraw).
 ! !
 
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'MR 12/3/2020 21:35:00'!
+test07
+
+	| senderAccount receiverAccount |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	Deposit register: 100 * peso on: receiverAccount.
+	
+	Transference register: 50 * peso from: senderAccount to: receiverAccount.
+		
+	self assert: 50 * peso equals: senderAccount balance.
+	self assert: 150 * peso equals: receiverAccount balance.
+! !
+
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
@@ -246,6 +262,26 @@ Deposit class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Transference category: 'ServiciosFinancieros-Ejercicio'!
+AccountTransaction subclass: #Transference
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Transference class' category: 'ServiciosFinancieros-Ejercicio'!
+Transference class
+	instanceVariableNames: ''!
+
+!Transference class methodsFor: 'instance creation' stamp: 'MR 12/3/2020 21:39:59'!
+register: aTransferenceAmount from: aSenderAccount to: aReceiverAccount 
+	
+	Deposit register: aTransferenceAmount on: aReceiverAccount.
+	Withdraw register: aTransferenceAmount on: aSenderAccount.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
@@ -402,10 +438,12 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/21/2020 01:37:42'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MR 12/3/2020 21:06:37'!
 balance
 
-	^transactions sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 * peso ]! !
+	^transactions sum: [ :aTransaction | (aTransaction isKindOf: Withdraw) ifTrue: [aTransaction value negated]
+															ifFalse: aTransaction value] 
+				ifEmpty: [ 0 * peso ]! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
 hasRegistered: aTransaction
