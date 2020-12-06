@@ -1,313 +1,258 @@
 !classDefinition: #MarsRoverTest category: 'MarsRover'!
 TestCase subclass: #MarsRoverTest
-	instanceVariableNames: 'marsRover north south east west'
+	instanceVariableNames: 'north east south west'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test01RoverThatWasntCommandedToMoveIsInStartingLocation
-	
-	marsRover processCommands: ''.
-	
-	self assert: (marsRover isInCoordinates: (1@1) facing: north).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test02RoverThatWasntCommandedToMoveIsNotInIncorrectPosition
-	
-	marsRover processCommands: ''.
-	
-	self deny: (marsRover isInCoordinates: (1@2) facing: north).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test03RoverThatWasntCommandedToRotateIsNotFacingAnotherDirection
-
-	marsRover processCommands: ''.
-	
-	self deny: (marsRover isInCoordinates: (1@1) facing: south).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test04RoverThatWasCommandedToMoveForwardIsInExpectedPosition
-	
-	marsRover processCommands: 'f'.
-	
-	self assert: (marsRover isInCoordinates: (1@2) facing: north).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test05RoverThatWasCommandedToMoveBackwardsIsInExpectedPosition
-	
-	marsRover processCommands: 'b'.
-	
-	self assert: (marsRover isInCoordinates: (1@0) facing: north).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test06RoverThatWasCommandedToRotateLeftIsFacingTheExpectedDirection
-	
-	marsRover processCommands: 'l'.
-	
-	self assert: (marsRover isInCoordinates: (1@1) facing: west).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test07RoverThatWasCommandedToRotateRightIsFacingTheExpectedDirection
-	
-	marsRover processCommands: 'r'.
-	
-	self assert: (marsRover isInCoordinates: (1@1) facing: east).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test08RoverThatWasCommandedToMoveMultipleTimesIsInExpectedPosition
-	
-	marsRover processCommands: 'fffbbf'.
-	
-	self assert: (marsRover isInCoordinates: (1@3) facing: north).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test09RoverThatWasCommandedToRotateRightMultipleTimesIsFacingTheExpectedDirection
-	
-	marsRover processCommands: 'rrr'.
-	
-	self assert: (marsRover isInCoordinates: (1@1) facing: west).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test10RoverThatWasCommandedToRotateMultipleTimesIsFacingTheExpectedDirection
-	
-	marsRover processCommands: 'lllr'.
-	
-	self assert: (marsRover isInCoordinates: (1@1) facing: south).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test11RoverThatWasCommandedToMoveAndRotateMultipleTimesIsPositionedCorrectly
-	
-	marsRover processCommands: 'lfrbbllffr'.
-	
-	self assert: (marsRover isInCoordinates: (0@-3) facing: west).! !
-
-!MarsRoverTest methodsFor: 'tests' stamp: 'AG 12/3/2020 17:37:27'!
-test12RoverThatWasGivenAChainOfCommandsWithAnInvalidCommandStopsAtTheLastValidCommand
-	
-	self should: [marsRover processCommands: 'fflblalffrff']
-		raise: Error
-		withExceptionDo: [:anError | self assert: anError messageText equals: 'Invalid Command'.
-							self assert: (marsRover isInCoordinates: (2@3) facing: south)]	.! !
-
-
-!MarsRoverTest methodsFor: 'setup' stamp: 'AG 12/2/2020 22:09:23'!
+!MarsRoverTest methodsFor: 'setUp/tearDown' stamp: 'MR 12/6/2020 18:30:52'!
 setUp
 	
-	north := North new.
-	south := South new.
-	east := East new.
-	west := West new.
-	marsRover := MarsRover newInCoordinates: (1@1) facing: north.
-	! !
-
-
-!classDefinition: #CardinalDirections category: 'MarsRover'!
-Object subclass: #CardinalDirections
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MarsRover'!
-
-!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
-cardinalDirectionOnYourLeft
-
-	^self subclassResponsibility! !
-
-!CardinalDirections methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
-cardinalDirectionOnYourRight
-
-	^self subclassResponsibility! !
+	north := PointingNorth new.
+	east := PointingEast new.
+	south := PointingSouth new.
+	west := PointingWest new.! !
 
 
-!CardinalDirections methodsFor: 'testing' stamp: 'AG 12/2/2020 22:18:56'!
-= aCardinalDirection
-
-	^self isKindOf: aCardinalDirection class! !
-
-
-!CardinalDirections methodsFor: 'movement unit vectors' stamp: 'AG 12/3/2020 17:18:42'!
-backwardMovementUnitVector
-
-	^self subclassResponsibility ! !
-
-!CardinalDirections methodsFor: 'movement unit vectors' stamp: 'AG 12/3/2020 17:18:48'!
-forwardMovementUnitVector
-
-	^self subclassResponsibility ! !
-
-
-!classDefinition: #East category: 'MarsRover'!
-CardinalDirections subclass: #East
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MarsRover'!
-
-!East methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
-cardinalDirectionOnYourLeft
-
-	^North new.! !
-
-!East methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
-cardinalDirectionOnYourRight
-
-	^South new.! !
-
-
-!East methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:50:38'!
-backwardMovementUnitVector
-
-	^(-1@0)! !
-
-!East methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:51:37'!
-forwardMovementUnitVector
-
-	^(1@0)! !
-
-
-!classDefinition: #North category: 'MarsRover'!
-CardinalDirections subclass: #North
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MarsRover'!
-
-!North methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
-cardinalDirectionOnYourLeft
-
-	^West new.! !
-
-!North methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
-cardinalDirectionOnYourRight
-
-	^East new.! !
-
-
-!North methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:52:17'!
-backwardMovementUnitVector
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test01RoverNotCommandedToMoveIsInStartingPosition
 	
-	^(0@-1)! !
-
-!North methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:52:24'!
-forwardMovementUnitVector
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
 	
-	^(0@1)! !
-
-
-!classDefinition: #South category: 'MarsRover'!
-CardinalDirections subclass: #South
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MarsRover'!
-
-!South methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
-cardinalDirectionOnYourLeft
-
-	^East new.! !
-
-!South methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
-cardinalDirectionOnYourRight
-
-	^West new.! !
-
-
-!South methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:53:55'!
-backwardMovementUnitVector
-
-	^(0@1)! !
-
-!South methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:04'!
-forwardMovementUnitVector
-
-	^(0@-1)! !
-
-
-!classDefinition: #West category: 'MarsRover'!
-CardinalDirections subclass: #West
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'MarsRover'!
-
-!West methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:08'!
-cardinalDirectionOnYourLeft
+	rover processCommands: ''.
 	
-	^South new.! !
+	self assert: (rover isInCoordinates: (1@1) facing: north) ! !
 
-!West methodsFor: 'direction changing' stamp: 'AG 12/3/2020 16:44:25'!
-cardinalDirectionOnYourRight
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test02RoverNotCommandedToMoveIsNotInAnIncorrectPosition
 	
-	^North new.! !
-
-
-!West methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:38'!
-backwardMovementUnitVector
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
 	
-	^(1@0)! !
-
-!West methodsFor: 'movement unit vectors' stamp: 'MR 12/2/2020 23:54:48'!
-forwardMovementUnitVector
+	rover processCommands: ''.
 	
-	^(-1@0)! !
+	self deny: (rover isInCoordinates: (4@3) facing: north) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test03RoverNotCommandedToRotateIsNotFacingAnotherDirection
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	
+	rover processCommands: ''.
+	
+	self deny: (rover isInCoordinates: (1@1) facing: south) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test04RoverCommandedToMoveForwardHeadingNorthIsInCorrectPosition
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	
+	rover processCommands: 'f'.
+	
+	self assert: (rover isInCoordinates: (1@2) facing: north) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test05RoverCommandedToMoveForwardHeadingEastIsInCorrectPosition
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: east.
+	
+	rover processCommands: 'f'.
+	
+	self assert: (rover isInCoordinates: (2@1) facing: east) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test06RoverCommandedToMoveForwardHeadingWestIsInCorrectPosition
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: west.
+	
+	rover processCommands: 'f'.
+	
+	self assert: (rover isInCoordinates: (0@1) facing: west) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test07RoverCommandedToMoveForwardHeadingSouthIsInCorrectPosition
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: south.
+	
+	rover processCommands: 'f'.
+	
+	self assert: (rover isInCoordinates: (1@0) facing: south) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test08RoverCommandedToMoveBackwardIsInCorrectPosition
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: south.
+	
+	rover processCommands: 'b'.
+	
+	self assert: (rover isInCoordinates: (1@2) facing: south) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test09RoverCommandedToRotateRightFacingNorthIsFacingEast
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	
+	rover processCommands: 'r'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: east) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test10RoverCommandedToRotateRightFacingEastIsFacingSouth
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: east.
+	
+	rover processCommands: 'r'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: south) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test11RoverCommandedToRotateRightFacingSouthIsFacingWest
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: south.
+	
+	rover processCommands: 'r'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: west) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test12RoverCommandedToRotateRightFacingWestIsFacingNorth
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: west.
+	
+	rover processCommands: 'r'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: north) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:58'!
+test13RoverCommandedToRotateLeftFacingNorthIsFacingWest
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	
+	rover processCommands: 'l'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: west) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test14RoverCommandedToRotateLeftFacingEastIsFacingNorth
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: east.
+	
+	rover processCommands: 'l'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: north) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test15RoverCommandedToRotateLeftFacingSouthIsFacingEast
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: south.
+	
+	rover processCommands: 'l'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: east) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test16RoverCommandedToRotateLeftFacingWestIsFacingSouth
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: west.
+	
+	rover processCommands: 'l'.
+	
+	self assert: (rover isInCoordinates: (1@1) facing: south) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test17RoverGivenMultipleCommandsIsInTheRightPositionAndHeadingTheRightWay
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	
+	rover processCommands: 'fffllbbr'.
+	
+	self assert: (rover isInCoordinates: (1@6) facing: west) ! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'MR 12/6/2020 19:54:57'!
+test18RoverGivenAnInvalidCommandStopsAtTheLastValidCommand
+	
+	| rover |
+	rover _ MarsRover newIn: (1@1) heading: north.
+	self should: [	rover processCommands: 'fflffbrxdffrlbbrf']
+		raise: Error
+		withExceptionDo: [ 	:anError | 
+						self assert: anError messageText equals: 'Invalid Command'.
+						self assert: (rover isInCoordinates: (0@3) facing: north)]! !
 
 
 !classDefinition: #MarsRover category: 'MarsRover'!
 Object subclass: #MarsRover
-	instanceVariableNames: 'currentCoordinates currentCardinalDirection'
+	instanceVariableNames: 'currentCoordinates currentHeading'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRover methodsFor: 'initialization' stamp: 'MR 12/2/2020 15:12:34'!
-initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection
- 
-	currentCoordinates := aSetOfCoordinates.
-	currentCardinalDirection := aCardinalDirection.! !
+!MarsRover methodsFor: 'initialization' stamp: 'MR 12/6/2020 19:55:50'!
+initializeNewIn: aSetOfCoordinates heading: aHeading 
+
+	currentCoordinates _ aSetOfCoordinates.
+	currentHeading _ aHeading.! !
 
 
-!MarsRover methodsFor: 'command procesing' stamp: 'AG 12/3/2020 17:42:52'!
-processCommands: aChainOfCommands 
-
-	aChainOfCommands do: [ :aCommandIdentifier | self processCommand: aCommandIdentifier ].! !
-
-
-!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:47'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/6/2020 20:03:52'!
 moveBackward
 
-	currentCoordinates := currentCoordinates + 	currentCardinalDirection backwardMovementUnitVector! !
+	currentCoordinates _ currentCoordinates + currentHeading backwardMovementVector ! !
 
-!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:05:09'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/6/2020 20:03:58'!
 moveForward
 
-	currentCoordinates := currentCoordinates + 	currentCardinalDirection forwardMovementUnitVector! !
+	currentCoordinates _ currentCoordinates + currentHeading forwardMovementVector. ! !
 
-!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:05'!
-processCommand: aCommandIdentifier
-
-	aCommandIdentifier = $f ifTrue: [^self moveForward ].
-	aCommandIdentifier = $b ifTrue: [^self moveBackward ].
-	aCommandIdentifier = $r ifTrue: [^self rotateRight ].
-	aCommandIdentifier = $l ifTrue: [^self rotateLeft ].
-	
-	self error: 'Invalid Command'.! !
-
-!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:06:55'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/6/2020 19:41:17'!
 rotateLeft
 
-	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourLeft! !
+	currentHeading _ currentHeading onYourLeft.! !
 
-!MarsRover methodsFor: 'private' stamp: 'MR 12/3/2020 18:07:02'!
+!MarsRover methodsFor: 'movement' stamp: 'MR 12/6/2020 19:41:17'!
 rotateRight
 
-	currentCardinalDirection := currentCardinalDirection cardinalDirectionOnYourRight! !
+	currentHeading _ currentHeading onYourRight.! !
 
 
-!MarsRover methodsFor: 'testing' stamp: 'AG 12/2/2020 22:22:00'!
-isInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
+!MarsRover methodsFor: 'command processing' stamp: 'MR 12/6/2020 18:35:12'!
+processCommand: aCommand 
 
-	^currentCoordinates = aSetOfCoordinates and: [currentCardinalDirection = aCardinalDirection]! !
+	aCommand = $f ifTrue: [^self moveForward].
+	aCommand = $b ifTrue: [^self moveBackward].
+	aCommand = $r ifTrue: [^self rotateRight].
+	aCommand = $l ifTrue: [^self rotateLeft].
+	
+	self error: 'Invalid Command'
+	! !
+
+!MarsRover methodsFor: 'command processing' stamp: 'MR 12/6/2020 17:34:25'!
+processCommands: aChainOfCommands 
+	
+	aChainOfCommands do: [:aCommand | self processCommand: aCommand]
+	! !
+
+
+!MarsRover methodsFor: 'testing' stamp: 'MR 12/6/2020 19:56:21'!
+isInCoordinates: aSetOfCoordinates facing: aHeading 
+
+	^currentCoordinates = aSetOfCoordinates and: [currentHeading = aHeading]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -315,9 +260,141 @@ isInCoordinates: aSetOfCoordinates facing: aCardinalDirection
 MarsRover class
 	instanceVariableNames: ''!
 
-!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/3/2020 18:04:03'!
-newInCoordinates: aSetOfCoordinates facing: aCardinalDirection 
+!MarsRover class methodsFor: 'instance creation' stamp: 'MR 12/6/2020 19:55:43'!
+newIn: aSetOfCoordinates heading: aHeading 
+
+	aSetOfCoordinates isPoint ifFalse: [self error: 'Invalid Starting Position'].
+	(aHeading isKindOf: MarsRoverHeading) ifFalse: [self error: 'Invalid Starting Direction']. 
 	
-	aSetOfCoordinates isPoint ifFalse: [self error: 'Invalid Coordinates'].	
-	(aCardinalDirection isKindOf: CardinalDirections) ifFalse: [self error: 'Invalid Cardinal Direction']. 
-	^self new initializeNewInCoordinates: aSetOfCoordinates facing: aCardinalDirection! !
+	^self new initializeNewIn: aSetOfCoordinates heading: aHeading ! !
+
+
+!classDefinition: #MarsRoverHeading category: 'MarsRover'!
+Object subclass: #MarsRoverHeading
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!MarsRoverHeading methodsFor: 'testing' stamp: 'MR 12/6/2020 17:02:24'!
+= aPossibleHeading
+
+	^aPossibleHeading isKindOf: self class! !
+
+
+!MarsRoverHeading methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:02'!
+onYourLeft
+
+	^self subclassResponsibility ! !
+
+!MarsRoverHeading methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:55'!
+onYourRight
+
+	^self subclassResponsibility ! !
+
+
+!MarsRoverHeading methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:54:05'!
+backwardMovementVector
+
+	^self forwardMovementVector negated! !
+
+!MarsRoverHeading methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:52:32'!
+forwardMovementVector
+
+	^self subclassResponsibility ! !
+
+
+!classDefinition: #PointingEast category: 'MarsRover'!
+MarsRoverHeading subclass: #PointingEast
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!PointingEast methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:52:32'!
+forwardMovementVector
+
+	^(1@0)! !
+
+
+!PointingEast methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:02'!
+onYourLeft
+	 
+	^PointingNorth new! !
+
+!PointingEast methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:55'!
+onYourRight
+	
+	^PointingSouth new! !
+
+
+!classDefinition: #PointingNorth category: 'MarsRover'!
+MarsRoverHeading subclass: #PointingNorth
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!PointingNorth methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:52:32'!
+forwardMovementVector
+
+	^0@1! !
+
+
+!PointingNorth methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:02'!
+onYourLeft
+	
+	^PointingWest new! !
+
+!PointingNorth methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:55'!
+onYourRight
+
+	^PointingEast new! !
+
+
+!classDefinition: #PointingSouth category: 'MarsRover'!
+MarsRoverHeading subclass: #PointingSouth
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!PointingSouth methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:52:32'!
+forwardMovementVector
+
+	^0@-1! !
+
+
+!PointingSouth methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:02'!
+onYourLeft
+	
+	^PointingEast new! !
+
+!PointingSouth methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:55'!
+onYourRight
+	 
+	^PointingWest new! !
+
+
+!classDefinition: #PointingWest category: 'MarsRover'!
+MarsRoverHeading subclass: #PointingWest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover'!
+
+!PointingWest methodsFor: 'movement vectors' stamp: 'MR 12/6/2020 19:52:32'!
+forwardMovementVector
+
+	^-1@0! !
+
+
+!PointingWest methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:02'!
+onYourLeft
+	
+	^PointingSouth new! !
+
+!PointingWest methodsFor: 'direction changing' stamp: 'MR 12/6/2020 19:20:55'!
+onYourRight
+	
+	^PointingNorth new! !
