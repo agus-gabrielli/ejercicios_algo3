@@ -1,3 +1,76 @@
+!classDefinition: #AccountSummaryTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #AccountSummaryTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 20:42:49'!
+test01
+
+	| anAccount |
+	
+	anAccount _ ReceptiveAccount new.
+	
+	self assert:  anAccount accountSummary isEmpty! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 20:46:38'!
+test02
+
+	| aPortfolio |
+	
+	aPortfolio _ Portfolio new.
+	
+	self assert:  aPortfolio accountSummary isEmpty! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 21:22:40'!
+test03
+
+	| anAccount aSummary |
+	
+	anAccount _ ReceptiveAccount new.
+	Deposit register: 100 * peso on: anAccount. 
+	aSummary _ anAccount accountSummary.
+	
+	self assert: 1 equals: aSummary size.
+	self assert: (aSummary includes: 'Depósito por 100 pesos') ! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 21:26:35'!
+test04
+
+	| anAccount aPortfolio aSummary |
+	
+	anAccount _ ReceptiveAccount new.
+	aPortfolio _ Portfolio with: anAccount.
+	Deposit register: 100 * peso on: anAccount. 
+	aSummary _ aPortfolio accountSummary.
+	
+	self assert: 1 equals: aSummary size.
+	self assert: (aSummary includes: 'Depósito por 100 pesos') ! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 21:07:51'!
+test05
+
+	| aRootPortfolio aPortfolio |
+	
+	aPortfolio _ Portfolio new.
+	aRootPortfolio _ Portfolio with: aPortfolio.
+	
+	self assert: aRootPortfolio accountSummary isEmpty.! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 21:22:06'!
+test06
+
+	| anAccount aSummary |
+	
+	anAccount _ ReceptiveAccount new.
+	Withdraw register: 50 * peso on: anAccount. 
+	aSummary _ anAccount accountSummary.
+	
+	self assert: 1 equals: aSummary size.
+	self assert: (aSummary includes: 'Extracción por 50 pesos') ! !
+
+
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
@@ -390,6 +463,212 @@ test08AnInvalidReceiverAccountCancelsTransfer
 						self assert: aSenderAccount balance equals: 0 * peso].! !
 
 
+!classDefinition: #Account category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Account
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Account methodsFor: 'as yet unclassified' stamp: 'MR 12/10/2020 21:04:59'!
+accountSummary
+
+	^self subclassResponsibility ! !
+
+
+!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
+Account subclass: #Portfolio
+	instanceVariableNames: 'accounts parents'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Portfolio methodsFor: 'initialization' stamp: 'MR 12/9/2020 22:01:37'!
+initialize
+
+	accounts _ OrderedCollection new.
+	parents _ OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'accounts management' stamp: 'HAW 5/25/2019 12:19:20'!
+add: accountToAdd
+
+	self assertCanAdd: accountToAdd.
+		
+	accounts add: accountToAdd.
+	accountToAdd addedTo: self 
+	! !
+
+
+!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:05:33'!
+hasAccount: anAccount
+
+	^accounts includes: anAccount ! !
+
+!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:09:01'!
+hasAccounts
+	
+	^accounts isEmpty ! !
+
+!Portfolio methodsFor: 'testing' stamp: 'MR 12/9/2020 19:54:27'!
+hasRegistered: aDeposit 
+	
+	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aDeposit]! !
+
+
+!Portfolio methodsFor: 'accessing' stamp: 'HAW 5/25/2019 11:49:06'!
+accountsSize
+	
+	^accounts size! !
+
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:17:31'!
+addRootParentsTo: rootParents
+
+	parents 
+		ifEmpty: [ rootParents add: self ] 
+		ifNotEmpty: [ parents do: [ :aParent | aParent addRootParentsTo: rootParents ]]! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:02:59'!
+addedTo: aPortfolio 
+	
+	parents add: aPortfolio ! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:20:56'!
+anyRootParentIsComposedBy: accountToAdd
+
+	^self rootParents anySatisfy: [ :aParent | aParent isComposedBy: accountToAdd]! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:20:36'!
+assertCanAdd: accountToAdd
+
+	(self anyRootParentIsComposedBy: accountToAdd) ifTrue: [ self signalCanNotAddAccount ].
+! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/29/2019 16:24:54'!
+isComposedBy: anAccount
+
+	^ self = anAccount or: [ accounts anySatisfy: [ :composedAccount | (composedAccount isComposedBy: anAccount) or: [ anAccount isComposedBy: composedAccount ]]]! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'MR 12/9/2020 22:02:01'!
+rootParents
+	
+	| rootParents |
+	
+	rootParents _ Set new.
+	self addRootParentsTo: rootParents.
+	
+	^rootParents! !
+
+!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 11:48:34'!
+signalCanNotAddAccount
+	
+	self error: self class canNotAddAccountErrorMessage! !
+
+
+!Portfolio methodsFor: 'balance' stamp: 'MR 12/9/2020 20:45:58'!
+balance
+	
+	^accounts sum: [:anAccount | anAccount balance] ifEmpty: [0 * peso]
+	! !
+
+
+!Portfolio methodsFor: 'summary' stamp: 'MR 12/10/2020 21:18:43'!
+accountSummary
+	
+	| anAccountSummary |
+	
+	anAccountSummary _ OrderedCollection new.
+	accounts do: [:anAccount | anAccountSummary addAllLast: anAccount accountSummary].
+		
+	^anAccountSummary! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:48:55'!
+canNotAddAccountErrorMessage
+	
+	^'Can not add repeated account to a portfolio'! !
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:18:21'!
+with: anAccount
+
+	^self new 
+		add: anAccount;
+		yourself! !
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:23:59'!
+with: anAccount with: anotherAccount
+
+	^self new 
+		add: anAccount;
+		add: anotherAccount;
+		yourself! !
+
+
+!classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
+Account subclass: #ReceptiveAccount
+	instanceVariableNames: 'transactions'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'MR 12/9/2020 22:04:33'!
+initialize
+
+	transactions _ OrderedCollection new.! !
+
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MR 12/9/2020 20:44:53'!
+balance
+	
+	^transactions sum: [:aTransaction | aTransaction valueToRecordInBalance ] ifEmpty: [0 * peso].
+	! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
+hasRegistered: aTransaction
+
+	^transactions includes: aTransaction
+! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MR 12/9/2020 20:44:10'!
+register: aTransaction
+	
+	(aTransaction isKindOf: AccountTransaction) ifFalse: [self error: 'Invalid transaction'].
+	
+	transactions add: aTransaction.
+! !
+
+
+!ReceptiveAccount methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:03:32'!
+addedTo: aPortfolio 
+	
+	! !
+
+!ReceptiveAccount methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 11:54:51'!
+isComposedBy: anAccount
+
+	^self = anAccount ! !
+
+
+!ReceptiveAccount methodsFor: 'summary' stamp: 'MR 12/10/2020 21:33:48'!
+accountSummary
+
+	| anAccountSummary aTransaction |
+	
+	anAccountSummary _ OrderedCollection new.
+	transactions ifEmpty: [^anAccountSummary].
+	aTransaction _ transactions at: 1.
+	(aTransaction isKindOf: Deposit) ifTrue: [	anAccountSummary add: 'Depósito por ', aTransaction value.].
+	(aTransaction isKindOf: Withdraw) ifTrue: [	anAccountSummary add: 'Extracción por ', aTransaction value.].
+	
+	^anAccountSummary! !
+
+
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
@@ -583,174 +862,6 @@ Withdraw class
 for: aValue
 
 	^self new initializeFor: aValue ! !
-
-
-!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #Portfolio
-	instanceVariableNames: 'accounts parents'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Ejercicio'!
-
-!Portfolio methodsFor: 'initialization' stamp: 'MR 12/9/2020 22:01:37'!
-initialize
-
-	accounts _ OrderedCollection new.
-	parents _ OrderedCollection new.! !
-
-
-!Portfolio methodsFor: 'accounts management' stamp: 'HAW 5/25/2019 12:19:20'!
-add: accountToAdd
-
-	self assertCanAdd: accountToAdd.
-		
-	accounts add: accountToAdd.
-	accountToAdd addedTo: self 
-	! !
-
-
-!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:05:33'!
-hasAccount: anAccount
-
-	^accounts includes: anAccount ! !
-
-!Portfolio methodsFor: 'testing' stamp: 'LL 9/20/2020 17:09:01'!
-hasAccounts
-	
-	^accounts isEmpty ! !
-
-!Portfolio methodsFor: 'testing' stamp: 'MR 12/9/2020 19:54:27'!
-hasRegistered: aDeposit 
-	
-	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aDeposit]! !
-
-
-!Portfolio methodsFor: 'accessing' stamp: 'HAW 5/25/2019 11:49:06'!
-accountsSize
-	
-	^accounts size! !
-
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:17:31'!
-addRootParentsTo: rootParents
-
-	parents 
-		ifEmpty: [ rootParents add: self ] 
-		ifNotEmpty: [ parents do: [ :aParent | aParent addRootParentsTo: rootParents ]]! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:02:59'!
-addedTo: aPortfolio 
-	
-	parents add: aPortfolio ! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:20:56'!
-anyRootParentIsComposedBy: accountToAdd
-
-	^self rootParents anySatisfy: [ :aParent | aParent isComposedBy: accountToAdd]! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:20:36'!
-assertCanAdd: accountToAdd
-
-	(self anyRootParentIsComposedBy: accountToAdd) ifTrue: [ self signalCanNotAddAccount ].
-! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/29/2019 16:24:54'!
-isComposedBy: anAccount
-
-	^ self = anAccount or: [ accounts anySatisfy: [ :composedAccount | (composedAccount isComposedBy: anAccount) or: [ anAccount isComposedBy: composedAccount ]]]! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'MR 12/9/2020 22:02:01'!
-rootParents
-	
-	| rootParents |
-	
-	rootParents _ Set new.
-	self addRootParentsTo: rootParents.
-	
-	^rootParents! !
-
-!Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 11:48:34'!
-signalCanNotAddAccount
-	
-	self error: self class canNotAddAccountErrorMessage! !
-
-
-!Portfolio methodsFor: 'balance' stamp: 'MR 12/9/2020 20:45:58'!
-balance
-	
-	^accounts sum: [:anAccount | anAccount balance] ifEmpty: [0 * peso]
-	! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
-Portfolio class
-	instanceVariableNames: ''!
-
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:48:55'!
-canNotAddAccountErrorMessage
-	
-	^'Can not add repeated account to a portfolio'! !
-
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:18:21'!
-with: anAccount
-
-	^self new 
-		add: anAccount;
-		yourself! !
-
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:23:59'!
-with: anAccount with: anotherAccount
-
-	^self new 
-		add: anAccount;
-		add: anotherAccount;
-		yourself! !
-
-
-!classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Ejercicio'!
-
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'MR 12/9/2020 22:04:33'!
-initialize
-
-	transactions _ OrderedCollection new.! !
-
-
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MR 12/9/2020 20:44:53'!
-balance
-	
-	^transactions sum: [:aTransaction | aTransaction valueToRecordInBalance ] ifEmpty: [0 * peso].
-	! !
-
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
-hasRegistered: aTransaction
-
-	^transactions includes: aTransaction
-! !
-
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'MR 12/9/2020 20:44:10'!
-register: aTransaction
-	
-	(aTransaction isKindOf: AccountTransaction) ifFalse: [self error: 'Invalid transaction'].
-	
-	transactions add: aTransaction.
-! !
-
-
-!ReceptiveAccount methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:03:32'!
-addedTo: aPortfolio 
-	
-	! !
-
-!ReceptiveAccount methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 11:54:51'!
-isComposedBy: anAccount
-
-	^self = anAccount ! !
 
 
 !classDefinition: #TransferOperation category: 'ServiciosFinancieros-Ejercicio'!
