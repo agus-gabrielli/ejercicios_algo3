@@ -5,149 +5,222 @@ TestCase subclass: #AccountSummaryTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!AccountSummaryTest methodsFor: 'setUps' stamp: 'AG 12/13/2020 19:46:25'!
-setUpExpectedSummariesTest07For: anExpectedSummaryOfDestinationAccount and: anExpectedSummaryOfOriginAccount
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:55:27'!
+expectedAccountSummaryForTest07
 
-	anExpectedSummaryOfOriginAccount add: 'Depósito por 50 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Salida por transferencia de 50 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Balance = 0 pesos'.
+	| aSummary |
+
+	aSummary _ OrderedCollection new.
+	aSummary add: 'Depósito por 100 pesos'.
+	aSummary add: 'Depósito por 200 pesos'.
+	aSummary add: 'Balance = 300 pesos'.
 	
-	anExpectedSummaryOfDestinationAccount add: 'Entrada por transferencia de 50 pesos'.
-	anExpectedSummaryOfDestinationAccount add: 'Balance = 50 pesos'.! !
+	^aSummary! !
 
-!AccountSummaryTest methodsFor: 'setUps' stamp: 'AG 12/13/2020 19:42:50'!
-setUpExpectedSummariesTest08For: anExpectedSummaryOfDestinationAccount and: anExpectedSummaryOfOriginAccount
-
-	anExpectedSummaryOfOriginAccount add: 'Depósito por 75 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Salida por transferencia de 50 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Entrada por transferencia de 25 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Extracción por 10 pesos'.
-	anExpectedSummaryOfOriginAccount add: 'Balance = 40 pesos'.
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:14:51'!
+expectedAccountSummaryForTest09
 	
-	anExpectedSummaryOfDestinationAccount add: 'Entrada por transferencia de 50 pesos'.
-	anExpectedSummaryOfDestinationAccount add: 'Salida por transferencia de 25 pesos'.
-	anExpectedSummaryOfDestinationAccount add: 'Balance = 25 pesos'.! !
+	| anExpectedSummary |
+	
+	anExpectedSummary _ OrderedCollection new.
+	anExpectedSummary add: 'Depósito por 100 pesos'.
+	anExpectedSummary add: 'Depósito por 75 pesos'.
+	anExpectedSummary add: 'Extracción por 25 pesos'.
+	anExpectedSummary add: 'Depósito por 50 pesos'.
+	anExpectedSummary add: 'Extracción por 100 pesos'.
+	anExpectedSummary add: 'Extracción por 75 pesos'.
+	anExpectedSummary add: 'Balance = 25 pesos'.
+	
+	^anExpectedSummary ! !
 
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:45:23'!
+expectedDestinationAcountSummaryForTest08
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:51:59'!
-test01EmptyAccountSummaryIsCorrect
+	| aSummary |
+	
+	aSummary _ OrderedCollection new.
+	aSummary add: 'Entrada por transferencia de 50 pesos'.
+	aSummary add: 'Balance = 50 pesos'.
+	
+	^aSummary
+	
+	! !
+
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:44:28'!
+expectedOriginAcountSummaryForTest08
+
+	| aSummary |
+	
+	aSummary _ OrderedCollection new.
+	aSummary add: 'Depósito por 50 pesos'.
+	aSummary add: 'Salida por transferencia de 50 pesos'.
+	aSummary add: 'Balance = 0 pesos'.
+	
+	^aSummary
+	! !
+
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:51:03'!
+firstReceptiveAccountForTest07
+	
+	| anAccount |
+	
+	anAccount _ ReceptiveAccount new.
+	Deposit register: 100 * peso on: anAccount.
+	
+	^anAccount.! !
+
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:42:28'!
+originReceptiveAccountForTest08
+	
+	| anOriginAccount |
+	
+	anOriginAccount _ ReceptiveAccount new.
+	Deposit register: 50*peso on: anOriginAccount.
+	
+	^anOriginAccount
+	! !
+
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:29:47'!
+receptiveAccountForTest09
 
 	| anAccount |
 	
 	anAccount _ ReceptiveAccount new.
+	Deposit register: 100 * peso on: anAccount. 
+	Deposit register: 75 * peso on: anAccount. 
+	Withdraw register: 25 * peso on: anAccount.
+	Deposit register: 50 * peso on: anAccount. 
+	Withdraw register: 100 * peso on: anAccount.	
+	Withdraw register: 75 * peso on: anAccount.
 	
-	self assert: 1 equals: anAccount accountSummary size. 
-	self assert: anAccount accountSummary includes: 'Balance = 0 pesos'.! !
+	^anAccount! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:52:09'!
+!AccountSummaryTest methodsFor: 'private' stamp: 'MR 12/14/2020 21:52:24'!
+secondReceptiveAccountForTest07
+
+	| anAccount |
+	
+	anAccount _ ReceptiveAccount new.
+	Deposit register: 200 * peso on: anAccount.
+	
+	^anAccount.! !
+
+
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:16:23'!
+test01EmptyAccountSummaryIsCorrect
+
+	| anAccount anAccountSummary |
+	
+	anAccount _ ReceptiveAccount new.
+	anAccountSummary _ AccountSummary new generateReportFor: anAccount.
+	
+	self assert: 1 equals: anAccountSummary size. 
+	self assert: anAccountSummary includes: 'Balance = 0 pesos'.! !
+
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:16:53'!
 test02EmptyPortfolioSummaryIsCorrect
 
-	| aPortfolio |
+	| aPortfolio aPortfolioSummary |
 	
 	aPortfolio _ Portfolio new.
+	aPortfolioSummary _ AccountSummary new generateReportFor: aPortfolio.
 	
-	self assert: 1 equals: aPortfolio accountSummary size. 
-	self assert: aPortfolio accountSummary includes: 'Balance = 0 pesos'.! !
+	self assert: 1 equals: aPortfolioSummary size. 
+	self assert: aPortfolioSummary includes: 'Balance = 0 pesos'.! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:55:36'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:11:49'!
 test03SummaryOfAnAccountWithADepositIsCorrect
 
 	| anAccount aSummary |
 	
+	
 	anAccount _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: anAccount. 
-	aSummary _ anAccount accountSummary.
+	aSummary _ AccountSummary new generateReportFor: anAccount.
 	
 	self assert: 2 equals: aSummary size.
 	self assert: (aSummary at: 1) equals: 'Depósito por 100 pesos'. 
 	self assert: (aSummary at: 2) equals: 'Balance = 100 pesos'.! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:53:51'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:17:33'!
 test04SummaryOfPortfolioWithAccountWithOneTransactionIsCorrect
 
-	| anAccount aPortfolio aSummary |
+	| anAccount aPortfolio aPortfolioSummary |
 	
 	anAccount _ ReceptiveAccount new.
 	aPortfolio _ Portfolio with: anAccount.
 	Deposit register: 100 * peso on: anAccount. 
-	aSummary _ aPortfolio accountSummary.
+	aPortfolioSummary _ AccountSummary new generateReportFor: aPortfolio.
 	
-	self assert: 2 equals: aSummary size.
-	self assert: (aSummary at: 1) equals: 'Depósito por 100 pesos'. 
-	self assert: (aSummary at: 2) equals: 'Balance = 100 pesos'.! !
+	self assert: 2 equals: aPortfolioSummary size.
+	self assert: (aPortfolioSummary at: 1) equals: 'Depósito por 100 pesos'. 
+	self assert: (aPortfolioSummary at: 2) equals: 'Balance = 100 pesos'.! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:54:50'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:18:24'!
 test05SummaryOfComposedPortfolioWithoutAccountsIsCorrect
 
-	| aRootPortfolio aPortfolio |
+	| aRootPortfolio aPortfolio aRootPortfolioSummary|
 	
 	aPortfolio _ Portfolio new.
 	aRootPortfolio _ Portfolio with: aPortfolio.
+	aRootPortfolioSummary _ AccountSummary new generateReportFor: aRootPortfolio.
 	
-	self assert: aRootPortfolio accountSummary includes: 'Balance = 0 pesos'.! !
+	self assert: aRootPortfolioSummary includes: 'Balance = 0 pesos'.! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:55:26'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 20:19:36'!
 test06SummaryOfAnAccountWithADepositIsCorrect
 
 	| anAccount aSummary |
 	
 	anAccount _ ReceptiveAccount new.
 	Withdraw register: 50 * peso on: anAccount. 
-	aSummary _ anAccount accountSummary.
+	aSummary _ AccountSummary new generateReportFor: anAccount.
 	
 	self assert: 2 equals: aSummary size.
 	self assert: (aSummary at: 1) equals: 'Extracción por 50 pesos'.
 	self assert: (aSummary at: 2) equals: 'Balance = -50 pesos'.! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'AG 12/13/2020 19:56:51'!
-test07SummariesOfAccountsInvolvedInATransferIsCorrect
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 21:57:33'!
+test07SummaryOfComposedPortfolioWithMultipleAccountsIsCorrect
 
-	| anOriginAccount aDestinationAccount aSummaryofAnOriginAccount aSummaryofADestinationAccount anExpectedSummaryOfOriginAccount anExpectedSummaryOfDestinationAccount |
+	|  aRootPortfolio aPortfolio aRootPortfolioAccountSummary |
 	
-	anOriginAccount _ ReceptiveAccount new.
-	aDestinationAccount _ ReceptiveAccount new.
-	Deposit register: 50 * peso on: anOriginAccount. 
-	TransferOperation register: 50 * peso from: anOriginAccount to: aDestinationAccount. 
-	aSummaryofAnOriginAccount _ anOriginAccount accountSummary.
-	aSummaryofADestinationAccount _ aDestinationAccount accountSummary.
+	aPortfolio _ Portfolio with: self firstReceptiveAccountForTest07.
+	aRootPortfolio _ Portfolio with: aPortfolio with: self secondReceptiveAccountForTest07.
 	
-	anExpectedSummaryOfOriginAccount _ OrderedCollection new.
-	anExpectedSummaryOfDestinationAccount _ OrderedCollection new.
-	self setUpExpectedSummariesTest07For: anExpectedSummaryOfDestinationAccount 
-									and: anExpectedSummaryOfOriginAccount.
+	aRootPortfolioAccountSummary _ AccountSummary new generateReportFor: aRootPortfolio.
+	
+	self assert: aRootPortfolioAccountSummary equals: self expectedAccountSummaryForTest07.! !
 
-	self assert: 3 equals: aSummaryofAnOriginAccount size.
-	self assert: aSummaryofAnOriginAccount equals: anExpectedSummaryOfOriginAccount.
-	
-	self assert: 2 equals: aSummaryofADestinationAccount size.
-	self assert: aSummaryofADestinationAccount equals: anExpectedSummaryOfDestinationAccount.
-! !
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 21:47:01'!
+test08SummariesOfAccountsInvolvedInATransferIsCorrect
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 20:01:08'!
-test08SummaryOfAccountWithMultipleTransactionsIsCorrect
-
-	| anOriginAccount aDestinationAccount aSummaryofAnOriginAccount aSummaryofADestinationAccount anExpectedSummaryOfOriginAccount anExpectedSummaryOfDestinationAccount |
+	| anOriginAccount aDestinationAccount aSummaryofAnOriginAccount aSummaryofADestinationAccount |
 	
-	anOriginAccount _ ReceptiveAccount new.
+	anOriginAccount _ self originReceptiveAccountForTest08.
 	aDestinationAccount _ ReceptiveAccount new.
 	
-	Deposit register: 75 * peso on: anOriginAccount. 
 	TransferOperation register: 50 * peso from: anOriginAccount to: aDestinationAccount. 
-	TransferOperation register: 25 * peso from: aDestinationAccount to: anOriginAccount.
-	Withdraw register: 10 * peso on: anOriginAccount.
-	aSummaryofAnOriginAccount _ anOriginAccount accountSummary.
-	aSummaryofADestinationAccount _ aDestinationAccount accountSummary.
 	
-	anExpectedSummaryOfOriginAccount _ OrderedCollection new.
-	anExpectedSummaryOfDestinationAccount _ OrderedCollection new.
-	self setUpExpectedSummariesTest08For: anExpectedSummaryOfDestinationAccount 
-									and: anExpectedSummaryOfOriginAccount.
+	aSummaryofAnOriginAccount _ AccountSummary new generateReportFor: anOriginAccount.
+	aSummaryofADestinationAccount _ AccountSummary new generateReportFor: aDestinationAccount.
+	
+	self assert: aSummaryofAnOriginAccount equals: self expectedOriginAcountSummaryForTest08.
+	self assert: aSummaryofADestinationAccount equals: self expectedDestinationAcountSummaryForTest08.
+	! !
 
-	self assert: 5 equals: aSummaryofAnOriginAccount size.
-	self assert: aSummaryofAnOriginAccount equals: anExpectedSummaryOfOriginAccount. 
+!AccountSummaryTest methodsFor: 'tests' stamp: 'MR 12/14/2020 21:31:13'!
+test09SummaryOfAccountWithMultipleTransactionsIsCorrect
+
+	| anAccount anAccountSummary |
 	
-	self assert: 3 equals: aSummaryofADestinationAccount size.
-	self assert: aSummaryofADestinationAccount equals: anExpectedSummaryOfDestinationAccount. 
+	anAccount _ self receptiveAccountForTest09.
+	
+	anAccountSummary _ AccountSummary new generateReportFor: anAccount.
+	
+	self assert: anAccountSummary equals: self expectedAccountSummaryForTest09
+	
+	
 ! !
 
 
@@ -429,34 +502,36 @@ TestCase subclass: #TransferNetTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:27:56'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:28:59'!
 test01EmptyAccountTransferNetIsZero
 
-	| anAccount |
+	| anAccount aReportResult |
 	
 	anAccount _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: anAccount.
+	aReportResult _ TransferNet new generateReportFor: anAccount.	
 	
-	self assert: anAccount transferNet equals: 0 * peso. ! !
+	self assert: aReportResult equals: 0 * peso. ! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:31:14'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:30:53'!
 test02TransferNetsOfAccountsInvolvedInATransferAreCorrect
 
-	| anOriginAccount aDestinationAccount |
+	| anOriginAccount aDestinationAccount anOriginReportResult aDestinationReportResult |
 	
 	anOriginAccount _ ReceptiveAccount new.
 	aDestinationAccount _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: anOriginAccount.
 	TransferOperation register: 75 * peso from: anOriginAccount to: aDestinationAccount.
-	
-	
-	self assert: -75 * peso equals: anOriginAccount transferNet. 
-	self assert: 75 * peso equals: aDestinationAccount transferNet.! !
+	anOriginReportResult _ TransferNet new generateReportFor: anOriginAccount.	
+	aDestinationReportResult _ TransferNet new generateReportFor: aDestinationAccount.	
+		
+	self assert: -75 * peso equals: anOriginReportResult. 
+	self assert: 75 * peso equals: aDestinationReportResult.! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:31:34'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:33:52'!
 test03TransferNetsOfAccountsInvolvedInMultipleTransfersAreCorrect
 
-	| anOriginAccount aDestinationAccount |
+	| anOriginAccount aDestinationAccount anOriginReportResult aDestinationReportResult |
 	
 	anOriginAccount _ ReceptiveAccount new.
 	aDestinationAccount _ ReceptiveAccount new.
@@ -468,23 +543,27 @@ test03TransferNetsOfAccountsInvolvedInMultipleTransfersAreCorrect
 	TransferOperation register: 75 * peso from: aDestinationAccount to: anOriginAccount.
 	TransferOperation register: 25 * peso from: anOriginAccount to: aDestinationAccount.
 	
+	anOriginReportResult _ TransferNet new generateReportFor: anOriginAccount.	
+	aDestinationReportResult _ TransferNet new generateReportFor: aDestinationAccount.		
 	
-	self assert: -100 * peso equals: anOriginAccount transferNet. 
-	self assert: 100 * peso equals: aDestinationAccount transferNet.! !
+	self assert: -100 * peso equals: anOriginReportResult. 
+	self assert: 100 * peso equals: aDestinationReportResult.! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:31:51'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:34:36'!
 test04EmptyPortfolioTransferNetIsZero
 
-	| aPortfolio |
+	| aPortfolio aPortfolioTransferNet |
 	
 	aPortfolio _ Portfolio new.
 	
-	self assert: aPortfolio transferNet equals: 0 * peso. ! !
+	aPortfolioTransferNet _ TransferNet new generateReportFor: aPortfolio.	
+	
+	self assert: aPortfolioTransferNet equals: 0 * peso. ! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:33:28'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:35:49'!
 test05TransferNetOfPortfolioWithOneAccountReturnsTransferNetOfAccount
 
-	| aPortfolio anOriginAccount aDestinationAccount |
+	| aPortfolio anOriginAccount aDestinationAccount aPortfolioTransferNet |
 	
 	anOriginAccount _ ReceptiveAccount new.
 	aDestinationAccount _ ReceptiveAccount new.
@@ -492,12 +571,14 @@ test05TransferNetOfPortfolioWithOneAccountReturnsTransferNetOfAccount
 	Deposit register: 100 * peso on: anOriginAccount.
 	TransferOperation register: 75 * peso from: anOriginAccount to: aDestinationAccount.
 	
-	self assert: -75 * peso equals: aPortfolio transferNet.! !
+	aPortfolioTransferNet _ TransferNet new generateReportFor: aPortfolio.	
+	
+	self assert: -75 * peso equals: aPortfolioTransferNet.! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/13/2020 23:37:29'!
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:36:19'!
 test06TransferNetOfComposedPortfolioIsTheSumOfTheTransferNetsOfItsAccounts
 
-	| aRootPortfolio aPortfolio anOriginAccount aDestinationAccount anOffshoreAccount |
+	| aRootPortfolio aPortfolio anOriginAccount aDestinationAccount anOffshoreAccount aRootPortfolioTransferNet |
 	
 	anOriginAccount _ ReceptiveAccount new.
 	aDestinationAccount _ ReceptiveAccount new.
@@ -508,7 +589,9 @@ test06TransferNetOfComposedPortfolioIsTheSumOfTheTransferNetsOfItsAccounts
 	TransferOperation register: 4000 * peso from: anOriginAccount to: anOffshoreAccount.
 	TransferOperation register: 3500 * peso from: anOffshoreAccount to: aDestinationAccount.
 	
-	self assert: -500 * peso equals: aRootPortfolio transferNet.! !
+	aRootPortfolioTransferNet _ TransferNet new generateReportFor: aRootPortfolio.	
+	
+	self assert: -500 * peso equals: aRootPortfolioTransferNet.! !
 
 
 !classDefinition: #TransferOperationTest category: 'ServiciosFinancieros-Ejercicio'!
@@ -750,22 +833,10 @@ balance
 	! !
 
 
-!Portfolio methodsFor: 'reports' stamp: 'MR 12/13/2020 23:42:59'!
-accountSummary
-	
-	| anAccountSummary |
-	
-	anAccountSummary _ OrderedCollection new.
-	accounts do: [:anAccount | anAccountSummary addAllLast: anAccount accountSummary].
-	anAccountSummary ifEmpty: [anAccountSummary add: 'Balance = 0 pesos'].
-	
-	^anAccountSummary! !
+!Portfolio methodsFor: 'reports' stamp: 'MR 12/14/2020 20:14:48'!
+transactionsDo: aBlock.
 
-!Portfolio methodsFor: 'reports' stamp: 'MR 12/13/2020 23:25:42'!
-transferNet
-	
-	
-	^accounts sum: [:anAccount | anAccount transferNet] ifEmpty: [0 * peso]! !
+	accounts do: [:anAccount | anAccount transactionsDo: aBlock]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -840,25 +911,10 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!ReceptiveAccount methodsFor: 'reports' stamp: 'MR 12/13/2020 23:45:52'!
-accountSummary
+!ReceptiveAccount methodsFor: 'reports' stamp: 'MR 12/14/2020 20:08:38'!
+transactionsDo: aBlock.
 
-	| anAccountSummary |
-	
-	anAccountSummary _ OrderedCollection new.
-	transactions do: [ :aTransaction | anAccountSummary add: aTransaction summaryLegend].
-	anAccountSummary add: 'Balance = ', self balance asString. 
-	
-	^anAccountSummary! !
-
-!ReceptiveAccount methodsFor: 'reports' stamp: 'MR 12/13/2020 23:04:23'!
-transferNet
-	
-	| aSetOfTransfers |
-	
-	aSetOfTransfers _ transactions select: [:aTransaction | aTransaction isKindOf: TransferTransaction].
-	^aSetOfTransfers inject: 0 * peso
-				into: [:currentTransferBalance :aTransfer | aTransfer affectBalance: currentTransferBalance]! !
+	transactions do: aBlock! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
@@ -1081,6 +1137,63 @@ Withdraw class
 for: aValue
 
 	^self new initializeFor: aValue ! !
+
+
+!classDefinition: #Report category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Report
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Report methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:00:21'!
+generateReportFor: anAccount
+	
+	^self subclassResponsibility ! !
+
+
+!classDefinition: #AccountSummary category: 'ServiciosFinancieros-Ejercicio'!
+Report subclass: #AccountSummary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!AccountSummary methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:24:29'!
+generateReportFor: anAccount
+
+	| aReport |
+	
+	aReport _ OrderedCollection new.
+	anAccount transactionsDo: [:aTransaction | aReport add: aTransaction summaryLegend]. 
+	aReport add: 'Balance = ', anAccount balance asString.
+	
+	^aReport
+	
+	
+	
+
+	! !
+
+
+!classDefinition: #TransferNet category: 'ServiciosFinancieros-Ejercicio'!
+Report subclass: #TransferNet
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransferNet methodsFor: 'as yet unclassified' stamp: 'MR 12/14/2020 20:32:43'!
+generateReportFor: anAccount
+
+	| aTransferNetBalance |
+	
+	aTransferNetBalance _ 0 * peso.
+	anAccount transactionsDo: [:aTransaction | (aTransaction isKindOf: TransferTransaction) ifTrue: [aTransferNetBalance _ aTransaction affectBalance: aTransferNetBalance]]. 
+		
+	^aTransferNetBalance
+
+	! !
 
 
 !classDefinition: #TransferOperation category: 'ServiciosFinancieros-Ejercicio'!
