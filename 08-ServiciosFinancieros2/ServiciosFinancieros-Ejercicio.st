@@ -1479,6 +1479,26 @@ considerOutgoingTransfer: anOutgoingTransfer
 
 	! !
 
+!AccountSummaryReport methodsFor: 'report creation - private' stamp: 'MR 12/17/2020 18:09:54'!
+considerPortfolio: aPortfolio
+
+	aPortfolio accountsDo: [:anAccount | anAccount participateInReport: self].
+	
+	
+	
+
+	! !
+
+!AccountSummaryReport methodsFor: 'report creation - private' stamp: 'MR 12/17/2020 18:10:02'!
+considerReceptiveAccount: aReceptiveAccount
+
+	aReceptiveAccount transactionsDo: [:aTransaction | aTransaction participateInReport: self]. 
+	
+	
+	
+
+	! !
+
 !AccountSummaryReport methodsFor: 'report creation - private' stamp: 'MR 12/16/2020 12:30:43'!
 considerWithdraw: aWithdraw
 
@@ -1493,11 +1513,11 @@ considerWithdraw: aWithdraw
 	! !
 
 
-!AccountSummaryReport methodsFor: 'report creation' stamp: 'MR 12/16/2020 12:30:43'!
+!AccountSummaryReport methodsFor: 'report creation' stamp: 'MR 12/17/2020 18:09:45'!
 generateReportFor: anAccount
 
-	accountSummary _ OrderedCollection new.
-	anAccount transactionsDo: [:aTransaction | aTransaction participateInReport: self]. 
+	self initialize.
+	anAccount participateInReport: self.
 	accountSummary add: 'Balance = ', anAccount balance asString.
 	
 	^accountSummary 
@@ -1520,6 +1540,13 @@ Report subclass: #PortfolioTreePrinterReport
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioTreePrinterReport methodsFor: 'initialization' stamp: 'MR 12/17/2020 18:13:52'!
+initialize
+
+	currentDepth _ ''.
+	portfolioTree _ OrderedCollection new.! !
+
 
 !PortfolioTreePrinterReport methodsFor: 'report creation - private' stamp: 'MR 12/17/2020 16:51:31'!
 considerPortfolio: aPortfolio
@@ -1545,11 +1572,10 @@ increaseDepth
 	^ currentDepth _ currentDepth, '   '! !
 
 
-!PortfolioTreePrinterReport methodsFor: 'report creation' stamp: 'MR 12/16/2020 14:44:08'!
+!PortfolioTreePrinterReport methodsFor: 'report creation' stamp: 'MR 12/17/2020 18:12:35'!
 generateReportFor: anAccount 
 	
-	currentDepth _ ''.
-	portfolioTree _ OrderedCollection new.
+	self initialize.
 	anAccount participateInReport: self.
 	
 	^portfolioTree.! !
@@ -1631,6 +1657,26 @@ considerOutgoingTransfer: anOutgoingTransfer
 
 	! !
 
+!TransferNetReport methodsFor: 'report creation - private' stamp: 'MR 12/17/2020 18:19:09'!
+considerPortfolio: aPortfolio
+
+	aPortfolio accountsDo: [:anAccount | anAccount participateInReport: self ]. 
+	
+
+
+
+	! !
+
+!TransferNetReport methodsFor: 'report creation - private' stamp: 'MR 12/17/2020 18:18:46'!
+considerReceptiveAccount: aReceptiveAccount
+
+	aReceptiveAccount transactionsDo: [:aTransaction | aTransaction participateInReport: self ]. 
+	
+
+
+
+	! !
+
 !TransferNetReport methodsFor: 'report creation - private' stamp: 'AG 12/15/2020 23:09:54'!
 considerWithdraw: aWithdraw
 
@@ -1639,12 +1685,12 @@ considerWithdraw: aWithdraw
 	! !
 
 
-!TransferNetReport methodsFor: 'report creation' stamp: 'MR 12/16/2020 12:30:50'!
+!TransferNetReport methodsFor: 'report creation' stamp: 'MR 12/17/2020 18:18:09'!
 generateReportFor: anAccount
-
-	transferNet _ 0 * peso.
-	anAccount transactionsDo: [:aTransaction | aTransaction participateInReport: self ]. 
-		
+	
+	self initialize.
+	anAccount participateInReport: self.
+	
 	^transferNet 
 
 	! !
