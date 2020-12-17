@@ -1030,11 +1030,6 @@ balance
 	^accounts sum: [:anAccount | anAccount balance] ifEmpty: [0 * peso]
 	! !
 
-!Portfolio methodsFor: 'accessing' stamp: 'MR 12/14/2020 20:14:48'!
-transactionsDo: aBlock.
-
-	accounts do: [:anAccount | anAccount transactionsDo: aBlock]! !
-
 
 !Portfolio methodsFor: 'reporting - private' stamp: 'MR 12/16/2020 14:22:17'!
 participateInReport: aReport
