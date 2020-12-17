@@ -224,6 +224,109 @@ test09SummaryOfAccountWithMultipleTransactionsIsCorrect
 ! !
 
 
+!classDefinition: #PortfolioDetailedTreePrinterTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #PortfolioDetailedTreePrinterTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 22:47:52'!
+test01
+	
+	| myPortfolio expectedTree |
+	
+	myPortfolio _ Portfolio named: 'Mi Portfolio'.
+	expectedTree _ OrderedCollection new.
+	expectedTree add: 'Mi Portfolio'.
+	expectedTree add: '   Balance = 0 pesos'.
+	
+	self assert: expectedTree 
+		equals: (PortfolioDetailedTreePrinterReport new generateReportFor: myPortfolio).  
+	
+	! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 22:49:39'!
+test02
+	
+	| myPortfolio myAccount expectedTree |
+	
+	myAccount _ ReceptiveAccount named: 'Mi cuenta'.
+	myPortfolio _ Portfolio named: 'Mi Portfolio' with: myAccount.
+
+	expectedTree _ OrderedCollection new.
+	expectedTree add: 'Mi Portfolio'.
+	expectedTree add: '   Mi cuenta'.
+	expectedTree add: '      Balance = 0 pesos'.
+	expectedTree add: '   Balance = 0 pesos'.
+		
+	self assert: expectedTree 
+		equals: (PortfolioDetailedTreePrinterReport new generateReportFor: myPortfolio).  
+	
+	! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:28:58'!
+test03
+	
+	| myPortfolio myAccount expectedTree |
+	
+	myAccount _ ReceptiveAccount named: 'Mi cuenta'.
+	Deposit register: 100 * peso on: myAccount.
+	myPortfolio _ Portfolio named: 'Mi Portfolio' with: myAccount.
+
+	expectedTree _ OrderedCollection new.
+	expectedTree add: 'Mi Portfolio'.
+	expectedTree add: '   Mi cuenta'.
+	expectedTree add: '      Depósito por 100 pesos'.
+	expectedTree add: '      Balance = 100 pesos'.
+	expectedTree add: '   Balance = 100 pesos'.
+		
+	self assert: expectedTree 
+		equals: (PortfolioDetailedTreePrinterReport new generateReportFor: myPortfolio).  
+	
+	! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:26:29'!
+test04
+	
+	| familyPortfolio myAccount expectedTree angiesAccount childrenPortfolio johnsAccount |
+	
+	myAccount _ ReceptiveAccount named: 'Cuenta Mia'.
+	Deposit register: 100 * peso on: myAccount.
+	Withdraw register: 50 * peso on: myAccount.
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'.
+	Deposit register: 100 * peso on: johnsAccount.
+	Withdraw register: 50 * peso on: johnsAccount.
+	angiesAccount _ ReceptiveAccount named: 'Cuenta de Angeles'.
+	Deposit register: 100 * peso on: angiesAccount.
+	TransferOperation register: 75 * peso from: angiesAccount to: ReceptiveAccount new. 
+	childrenPortfolio _ Portfolio named: 'Portfolio de hijos' with: johnsAccount with: angiesAccount.
+	familyPortfolio _ Portfolio named: 'Portfolio de la familia' with: myAccount with: childrenPortfolio.
+
+	expectedTree _ OrderedCollection new.
+	expectedTree add: 'Portfolio de la familia'.
+	expectedTree add: '   Cuenta Mia'.
+	expectedTree add: '      Depósito por 100 pesos'.
+	expectedTree add: '      Extracción por 50 pesos'.
+	expectedTree add: '      Balance = 50 pesos'.
+	expectedTree add: '   Portfolio de hijos'.
+	expectedTree add: '      Cuenta de Juan'.
+	expectedTree add: '         Depósito por 100 pesos'.
+	expectedTree add: '         Extracción por 50 pesos'.
+	expectedTree add: '         Balance = 50 pesos'.
+	expectedTree add: '      Cuenta de Angeles'.
+	expectedTree add: '         Depósito por 100 pesos'.
+	expectedTree add: '         Salida por transferencia de 75 pesos'.
+	expectedTree add: '         Balance = 25 pesos'.
+	expectedTree add: '      Balance = 75 pesos'.
+	expectedTree add: '   Balance = 125 pesos'.
+		
+	self assert: expectedTree 
+		equals: (PortfolioDetailedTreePrinterReport new generateReportFor: familyPortfolio).  
+	
+	! !
+
+
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
@@ -1376,6 +1479,75 @@ generateReportFor: anAccount
 initialize
 
 	accountSummary _ OrderedCollection new.! !
+
+
+!classDefinition: #PortfolioDetailedTreePrinterReport category: 'ServiciosFinancieros-Ejercicio'!
+Report subclass: #PortfolioDetailedTreePrinterReport
+	instanceVariableNames: 'detailedTree currentDepth'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:18:01'!
+considerDeposit: aDeposit
+
+	detailedTree add: currentDepth, 'Depósito por ', aDeposit value asString.! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:18:11'!
+considerIncomingTransfer: anIncomingTransfer
+
+	detailedTree add: currentDepth, 'Entrada por transferencia de ', anIncomingTransfer value asString.
+! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:18:16'!
+considerOutgoingTransfer: anOutgoingTransfer
+
+	detailedTree add: currentDepth, 'Salida por transferencia de ', anOutgoingTransfer value asString.
+! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:30:07'!
+considerPortfolio: aPortfolio
+
+	detailedTree add: currentDepth, aPortfolio name.
+	self increaseDepth.
+	aPortfolio accountsDo: [:anAccount | anAccount participateInReport: self].
+	detailedTree add: currentDepth, 'Balance = ', aPortfolio balance asString.
+	self decreaseDepth.
+	! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:30:35'!
+considerReceptiveAccount: aReceptiveAccount
+
+	detailedTree add: currentDepth, aReceptiveAccount name.
+	self increaseDepth.
+	aReceptiveAccount transactionsDo: [:aTransaction | aTransaction participateInReport: self].
+	detailedTree add: currentDepth, 'Balance = ', aReceptiveAccount balance asString.
+	self decreaseDepth! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:18:21'!
+considerWithdraw: aWithdraw
+
+	detailedTree add: currentDepth, 'Extracción por ', aWithdraw value asString.
+! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:29:54'!
+decreaseDepth
+
+	^ currentDepth _ currentDepth truncateTo: (currentDepth size -3)! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:30:47'!
+generateReportFor: anAccount 
+	
+	detailedTree _ OrderedCollection new.
+	currentDepth _ ''.
+	anAccount participateInReport: self.
+	
+	^detailedTree! !
+
+!PortfolioDetailedTreePrinterReport methodsFor: 'as yet unclassified' stamp: 'MR 12/16/2020 23:30:07'!
+increaseDepth
+
+	^ currentDepth _ currentDepth, '   '! !
 
 
 !classDefinition: #PortfolioTreePrinterReport category: 'ServiciosFinancieros-Ejercicio'!
