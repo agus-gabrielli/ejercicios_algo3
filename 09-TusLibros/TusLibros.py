@@ -10,7 +10,7 @@ class ShoppingCart():
 
     def add_book(self, book_to_add, book_quantity):
         if book_to_add not in self.books_sold_by_publisher:
-            raise Exception("No se puede agregar al carro libros que no sean de la editorial")
+            raise Exception("No se puede agregar al carro libros de otra editorial")
         if book_quantity < 1:
             raise Exception("La cantidad de unidades del libro agregado debe ser mayor a 0")
     
@@ -26,6 +26,6 @@ class ShoppingCart():
 
     def list_content(self):
         content_list = "0"
-        for book,book_quantity in self.contained_books.items():
+        for book, book_quantity in self.contained_books.items():
             content_list = content_list + "|" + book + "|" + str(book_quantity)
         return content_list
