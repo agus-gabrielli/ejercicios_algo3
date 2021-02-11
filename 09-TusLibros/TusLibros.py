@@ -1,22 +1,23 @@
 
-class Cart():
+class ShoppingCart():
 
-    def __init__(self, client_id, password):
+    def __init__(self):
         self.contained_books = {}
-        self.books_sold_by_publisher = set(["librito1", "librito2", "librito3"])
+        self.books_sold_by_publisher = set(["9788498387087", "9788498389722", "9789878000121"])
 
     def is_empty(self):
         return not self.contained_books
 
     def add_book(self, book_to_add, book_quantity):
-        if book_to_add not in self.books_sold_by_publisher or book_quantity < 1:
-            return False
+        if book_to_add not in self.books_sold_by_publisher:
+            raise Exception("No se puede agregar al carro libros que no sean de la editorial")
+        if book_quantity < 1:
+            raise Exception("La cantidad de unidades del libro agregado debe ser mayor a 0")
     
         if book_to_add not in self.contained_books:
             self.contained_books[book_to_add] = book_quantity
         else: 
             self.contained_books[book_to_add] += book_quantity
-        return True
     
     def contains(self, queried_book, book_quantity):
         if queried_book not in self.contained_books: 
