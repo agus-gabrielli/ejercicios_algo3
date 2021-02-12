@@ -1,5 +1,5 @@
-from TusLibros import ShoppingCart
-from CartExceptions import *
+from TusLibros import *
+from TusLibrosExceptions import *
 import unittest
 
 #####################################################################
@@ -7,7 +7,7 @@ import unittest
 #                       CLASE TESTCASE                              #
 #                                                                   #
 #####################################################################
-class TestShoppingCartMethods(unittest.TestCase):
+class ShoppingCartTests(unittest.TestCase):
 
     def setUp(self):
         self.shopping_cart = ShoppingCart()
@@ -71,6 +71,26 @@ class TestShoppingCartMethods(unittest.TestCase):
             self.shopping_cart.add_book(self.book_to_add, -2)
         self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
 
+class CashierTest(unittest.TestCase):
+
+    def test01_cant_checkout_empty_cart(self):
+        shopping_cart = ShoppingCart()
+        sales_system = SalesSystem()
+        credit_card = CreditCard()
+        cashier = Cashier(sales_system)
+
+        with self.assertRaises(CannotCheckoutEmptyCart):
+            cashier.check_out_cart(shopping_cart, credit_card)
+
+    def test02_can_check_out_single_item(self):
+        shopping_cart = ShoppingCart()
+        shopping_cart.add_book("9788498387087", 1)
+        sales_system = SalesSystem()
+        cashier = Cashier(sales_system)
+        credit_card = CreditCard()
+
+        cashier.check_out_cart(shopping_cart, credit_card)
+        assert ledger_book.purchase_amount(shopping_cart) == 50
 
 
 #####################################################################

@@ -1,7 +1,7 @@
-from CartExceptions import *
+from TusLibrosExceptions import *
 
 
-class ShoppingCart():
+class ShoppingCart:
 
     def __init__(self):
         self.contained_books = {}
@@ -31,3 +31,9 @@ class ShoppingCart():
         for book, book_quantity in self.contained_books.items():
             content_list = content_list + "|" + book + "|" + str(book_quantity)
         return content_list
+
+
+class Cashier:
+
+    def check_out_cart(self, client_cart):
+        raise CannotCheckoutEmptyCart

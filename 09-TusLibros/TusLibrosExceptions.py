@@ -5,3 +5,7 @@ class UnknownBook(Exception):
 
 class InvalidBookQuantity(Exception):
     pass
+
+
+class CannotCheckoutEmptyCart(Exception):
+    pass
