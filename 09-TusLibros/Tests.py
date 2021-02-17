@@ -77,10 +77,15 @@ class CashierTest(unittest.TestCase):
         self.second_book_to_add = "9788498389722"
         self.third_book_to_add = "9789878000121"
         self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.third_book_to_add])
-        self.valid_credit_card = ["1234567890987654", str(datetime.now() + 100), "145"]
+        self.valid_credit_card = self.create_valid_credit_card()
         self.ledger = []
         self.price_list = {self.book_to_add: 50, self.second_book_to_add: 75, self.third_book_to_add: 20}
         self.cashier = Cashier(self.ledger, self.price_list)
+
+    def create_valid_credit_card(self):
+        rundate = datetime.now()
+        expiry_date = rundate.replace(year=rundate.year + 5, day=1)
+        return ["1234567890987654", expiry_date.strftime('%m/%Y'), "145"]
 
     def test01_cannot_checkout_empty_cart(self):
         with self.assertRaises(CannotCheckoutEmptyCart):
