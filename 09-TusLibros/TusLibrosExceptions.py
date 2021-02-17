@@ -9,3 +9,6 @@ class InvalidBookQuantity(Exception):
 
 class CannotCheckoutEmptyCart(Exception):
     pass
+
+class ExpiredCreditCard(Exception):
+    pass
