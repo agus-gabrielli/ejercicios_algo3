@@ -1,0 +1,2 @@
+__pycache__/ #Ignorar pycache
+.vscode/ #Ignorar configuracion de visual studio
