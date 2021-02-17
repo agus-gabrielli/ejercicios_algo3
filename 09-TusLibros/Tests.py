@@ -75,17 +75,17 @@ class CashierTest(unittest.TestCase):
     def setUp(self):
         self.book_to_add = "9788498387087"
         self.second_book_to_add = "9788498389722"
-        self.third_book_to_add = "9789878000121"
-        self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.third_book_to_add])
-        self.valid_credit_card = self.create_valid_credit_card()
+        self.expensive_book_to_add = "9789878000121"
+        self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
+        self.valid_credit_card = ["1234567890987654", self.create_valid_expiration_date(), "Sergio Fedi"]
         self.ledger = []
-        self.price_list = {self.book_to_add: 50, self.second_book_to_add: 75, self.third_book_to_add: 20}
+        self.price_list = {self.book_to_add: 50.0, self.second_book_to_add: 75.0, self.expensive_book_to_add: 300000000000000.0}
         self.cashier = Cashier(self.ledger, self.price_list)
 
-    def create_valid_credit_card(self):
+    def create_valid_expiration_date(self):
         rundate = datetime.now()
-        expiry_date = rundate.replace(year=rundate.year + 5, day=1)
-        return ["1234567890987654", expiry_date.strftime('%m/%Y'), "145"]
+        expiration_date = rundate.replace(year=rundate.year + 5, day=1)
+        return expiration_date.strftime('%m/%Y')
 
     def test01_cannot_checkout_empty_cart(self):
         with self.assertRaises(CannotCheckoutEmptyCart):
@@ -95,21 +95,48 @@ class CashierTest(unittest.TestCase):
         self.shopping_cart.add_book(self.book_to_add, 1)
 
         ticket = self.cashier.check_out_cart(self.shopping_cart, self.valid_credit_card)
-        self.assertEqual(ticket, [(self.book_to_add, 1), ("Total:", 50)])
+        self.assertEqual(ticket, [(self.book_to_add, 1), ("Total:", 50.0)])
 
-    def test_03_can_check_out_multiple_book(self):
+    def test03_can_check_out_multiple_book(self):
         self.shopping_cart.add_book(self.book_to_add, 5)
         self.shopping_cart.add_book(self.second_book_to_add, 3)
 
         ticket = self.cashier.check_out_cart(self.shopping_cart, self.valid_credit_card)
-        self.assertEqual(ticket, [(self.book_to_add, 5), (self.second_book_to_add, 3), ("Total:", 475)])
+        self.assertEqual(ticket, [(self.book_to_add, 5), (self.second_book_to_add, 3), ("Total:", 475.0)])
 
 
-    def test_04_cannot_check_out_with_expired_credit_card(self):
+    def test04_cannot_check_out_with_expired_credit_card(self):
         self.shopping_cart.add_book(self.book_to_add, 3)
 
         with self.assertRaises(ExpiredCreditCard):
-            self.cashier.check_out_cart(self.shopping_cart, ["3834567990987654", "08/19", "843"])
+            self.cashier.check_out_cart(self.shopping_cart, ["3734567890987654", "08/2003", "Enrique el antiguo"])
+
+    def test05_cannot_check_out_with_invalid_credit_card_number(self):
+        self.shopping_cart.add_book(self.book_to_add, 3)
+
+        with self.assertRaises(InvalidCreditCardNumber):
+            self.cashier.check_out_cart(self.shopping_cart, ["sadasdasas456", self.create_valid_expiration_date(), "Hackermann"])
+
+    def test06_cannot_check_out_with_wrong_credit_card_owner_name(self):
+        self.shopping_cart.add_book(self.book_to_add, 3)
+
+        with self.assertRaises(InvalidCreditCardOwner):
+            self.cashier.check_out_cart(self.shopping_cart, ["1234567890987654", self.create_valid_expiration_date(), "Jose Francisco de San Martín y Matorras"])
+
+    def test07_cannot_check_out_excessivelly_expensive_purchase(self):
+        self.shopping_cart.add_book(self.expensive_book_to_add, 4)
+
+        with self.assertRaises(TransactionAmountOverflow):
+            self.cashier.check_out_cart(self.shopping_cart, self.valid_credit_card)
+
+    def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
+        self.shopping_cart.add_book(self.book_to_add, 3)
+
+        with self.assertRaises(MerchantProcessorException) as payment_exception:
+            self.cashier.check_out_cart(self.shopping_cart,
+                                        ["4380500008685118", self.create_valid_expiration_date(), "Mauro Rizzi"])
+        self.assertEqual("1|SIN_DISPONIBLE", str(payment_exception))
+
 """
 test4 --> expired credit levanta excepcion
 test5 --> invalid cc not 16 digits l e

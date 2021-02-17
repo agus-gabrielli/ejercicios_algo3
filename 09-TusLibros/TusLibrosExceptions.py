@@ -12,3 +12,15 @@ class CannotCheckoutEmptyCart(Exception):
 
 class ExpiredCreditCard(Exception):
     pass
+
+class InvalidCreditCardNumber(Exception):
+    pass
+
+class InvalidCreditCardOwner(Exception):
+    pass
+
+class TransactionAmountOverflow(Exception):
+    pass
+
+class MerchantProcessorException(Exception):
+    pass
