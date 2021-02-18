@@ -30,30 +30,30 @@ class ShoppingCart:
 
 class Cashier:
     def __init__(self, ledger, price_list, merchant_processor):
-        self.ledger = ledger
-        self.price_list = price_list
-        self.merchant_processor = merchant_processor
+        self._ledger = ledger
+        self._price_list = price_list
+        self._merchant_processor = merchant_processor
 
 
-    def check_out_cart(self, client_cart, credit_card):
+    def check_out(self, client_cart, credit_card):
         if client_cart.is_empty():
             raise CannotCheckoutEmptyCart
 
+        ticket = self._process_items_of(client_cart)
+        
         self._validate_credit_card(credit_card)
+        self._check_for_transaction_amount_overflow(ticket.total())
 
-        ticket = self._create_ticket(client_cart)
-
-        self.merchant_processor.process_payment(ticket.total(), credit_card)
-
-        self.ledger.append(ticket)
+        self._merchant_processor.process_payment(ticket.total(), credit_card)
+        self._ledger.append(ticket)
         return ticket
 
-    def _create_ticket(self, client_cart):
+    def _process_items_of(self, client_cart):
         ticket = Ticket()
-        for book,book_quantity in client_cart.list_content().items():
-            ticket.add_item(book, book_quantity, self.price_list[book])
 
-        self._check_for_transaction_amount_overflow(ticket.total())
+        for book,book_quantity in client_cart.list_content().items():
+            ticket.add_item(book, book_quantity, self._price_list[book])
+
         return ticket
 
     def _validate_credit_card(self, credit_card):
