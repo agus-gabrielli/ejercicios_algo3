@@ -22,44 +22,44 @@ class ShoppingCart:
             self._contained_books[book_to_add] += book_quantity
     
     def contains(self, queried_book, book_quantity):
-        if queried_book not in self._contained_books: 
-            return False
-        return self._contained_books[queried_book] == book_quantity
+        return queried_book in self._contained_books and self._contained_books[queried_book] == book_quantity
 
     def list_content(self):
         return self._contained_books.copy()
 
 
 class Cashier:
-    def __init__(self, ledger, price_list):
+    def __init__(self, ledger, price_list, merchant_processor):
         self.ledger = ledger
         self.price_list = price_list
+        self.merchant_processor = merchant_processor
 
 
     def check_out_cart(self, client_cart, credit_card):
         if client_cart.is_empty():
             raise CannotCheckoutEmptyCart
 
-        self._check_valid_credit_card_number(credit_card)
-        self._check_valid_owner_name(credit_card)
-        self._check_expiration_date_of(credit_card)
+        self._validate_credit_card(credit_card)
 
         ticket = self._create_ticket(client_cart)
 
-        self.mock_merchant_processor("https:")
+        self.merchant_processor.process_payment(ticket.total(), credit_card)
 
         self.ledger.append(ticket)
         return ticket
 
     def _create_ticket(self, client_cart):
-        ticket = []
-        purchase_total = 0
+        ticket = Ticket()
         for book,book_quantity in client_cart.list_content().items():
-            ticket.append((book, book_quantity))
-            purchase_total += self.price_list[book] * book_quantity
-        self._check_for_transaction_amount_overflow(purchase_total)
-        ticket.append(("Total:", round(purchase_total, 2)))
+            ticket.add_item(book, book_quantity, self.price_list[book])
+
+        self._check_for_transaction_amount_overflow(ticket.total())
         return ticket
+
+    def _validate_credit_card(self, credit_card):
+            self._check_valid_credit_card_number(credit_card)
+            self._check_valid_owner_name(credit_card)
+            self._check_expiration_date_of(credit_card)
 
     def _check_expiration_date_of(self, credit_card):
         expiry_date = datetime.strptime(credit_card[1], '%m/%Y')
@@ -77,16 +77,19 @@ class Cashier:
     def _check_for_transaction_amount_overflow(self, total):
         if total > 999999999999999.99:
             raise TransactionAmountOverflow("El importe de la compra excede lo permitido")
-        
-    def _build_transaction_stream(self, credit_card, total):
-# https://merchant.com/debit?creditCardNumber=5400000000000001&creditCardExpiration=072011&creditCardOwner=PEPE%20SANCHEZ&transactionAmount=123.50#
-        string_total = str(total)
-        if len(string_total) - string_total.index(".") == 2:
-            string_total = string_total + "0"
-        return "https://merchant.com/debit?creditCardNumber=" + credit_card[0] + "&creditCardExpiration=" + credit_card[1].replace("/","") + "&creditCardOwner=" + credit_card[2].upper().replace(" ", "%20") + "&transactionAmount=" + string_total
-
-        
-        
 
 
+class Ticket:
+    def __init__(self):
+        self._items = {}
+        self._total = 0
 
+    def add_item(self, item, quantity, item_price):
+        self._items[item] = quantity
+        self._total += item_price * quantity
+
+    def contains_item(self, item, quantity):
+        return item in self._items and self._items[item] == quantity
+
+    def total(self):
+        return self._total
