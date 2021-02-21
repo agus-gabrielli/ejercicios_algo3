@@ -1,6 +1,3 @@
-from TusLibrosExceptions import *
-
-
 class ShoppingCart:
 
     def __init__(self, catalog):
@@ -12,9 +9,9 @@ class ShoppingCart:
 
     def add_book(self, book_to_add, book_quantity):
         if book_to_add not in self._books_sold_by_publisher:
-            raise UnknownBook("No se puede agregar al carro libros de otra editorial")
+            raise Exception(self.__class__.cannot_add_unkown_book_to_cart_error_message())
         if book_quantity < 1:
-            raise InvalidBookQuantity("La cantidad de unidades del libro agregado debe ser mayor a 0")
+            raise Exception(self.__class__.cannot_add_zero_or_negative_amount_of_books_to_cart_error_message())
     
         if book_to_add not in self._contained_books:
             self._contained_books[book_to_add] = book_quantity
@@ -26,3 +23,11 @@ class ShoppingCart:
 
     def list_content(self):
         return self._contained_books.copy()
+
+    @classmethod
+    def cannot_add_unkown_book_to_cart_error_message(cls):
+        return "Cannot add a book from another editorial to the cart"
+
+    @classmethod
+    def cannot_add_zero_or_negative_amount_of_books_to_cart_error_message(cls):
+        return "Cannot add a book with zero or negative quantity to the cart"

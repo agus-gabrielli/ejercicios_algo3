@@ -74,14 +74,20 @@ class ShoppingCartTests(unittest.TestCase):
     def test08_cart_doesnt_accept_books_from_another_publisher(self):
         book_from_another_publisher = "9789505470662"
 
-        with self.assertRaises(UnknownBook):
+        try:
             self.shopping_cart.add_book(book_from_another_publisher, 3)
-        self.assertFalse(self.shopping_cart.contains(book_from_another_publisher, 3))
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), ShoppingCart.cannot_add_unkown_book_to_cart_error_message())
+            self.assertFalse(self.shopping_cart.contains(book_from_another_publisher, 3))
 
     def test09_cart_only_accepts_a_book_quantity_greater_than_zero(self):
-        with self.assertRaises(InvalidBookQuantity):
+        try:
             self.shopping_cart.add_book(self.book_to_add, -2)
-        self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), ShoppingCart.cannot_add_zero_or_negative_amount_of_books_to_cart_error_message())
+            self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
 
 
 class CashierTest(unittest.TestCase):
@@ -98,7 +104,6 @@ class CashierTest(unittest.TestCase):
         self.ledger = []
         self.price_list = {self.book_to_add: 50.0, self.second_book_to_add: 75.0, self.expensive_book_to_add: 300000000000000.0}
         self.cashier = Cashier(self.ledger, self.price_list, MockMerchantProcessor())
-
 
     def test01_cannot_checkout_empty_cart(self):
         try:
