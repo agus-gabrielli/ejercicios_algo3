@@ -12,10 +12,10 @@ class Cashier:
     def check_out(self, client_cart, credit_card):
         if client_cart.is_empty():
             raise CannotCheckoutEmptyCart
+        self._check_if_expired(credit_card)
 
         ticket = self._process_items_of(client_cart)
 
-        self._validate_credit_card(credit_card)
         self._check_for_transaction_amount_overflow(ticket.total())
 
         self._merchant_processor.process_payment(ticket.total(), credit_card)
@@ -30,24 +30,23 @@ class Cashier:
 
         return ticket
 
-    def _validate_credit_card(self, credit_card):
-        self._check_valid_credit_card_number(credit_card)
-        self._check_valid_owner_name(credit_card)
-        self._check_expiration_date_of(credit_card)
+    def _check_if_expired(self, credit_card):
+        if credit_card.is_expired_on(datetime.now()):
+            raise Exception(self.__class__.cannot_checkout_using_an_expired_card_error_message())
 
-    def _check_expiration_date_of(self, credit_card):
-        expiry_date = datetime.strptime(credit_card[1], '%m/%Y')
-        if expiry_date < datetime.now():
-            raise ExpiredCreditCard("La tarjeta de credito estaba vencida")
-
-    def _check_valid_credit_card_number(self, credit_card):
-        if len(credit_card[0]) != 16 or not credit_card[0].isnumeric():
-            raise InvalidCreditCardNumber("El numero de la tarjeta de credito es invalido")
-
-    def _check_valid_owner_name(self, credit_card):
-        if len(credit_card[2]) > 30:
-            raise InvalidCreditCardOwner("El nombre del dueño de la tarjeta es demasiado largo")
 
     def _check_for_transaction_amount_overflow(self, total):
         if total > 999999999999999.99:
             raise TransactionAmountOverflow("El importe de la compra excede lo permitido")
+
+    @classmethod
+    def cannot_checkout_an_empty_cart_error_message(cls):
+        return "Cannot checkout an empty cart"
+
+    @classmethod
+    def cannot_checkout_using_an_expired_card_error_message(cls):
+        return "Cannot checkout using an expired card"
+
+    @classmethod
+    def could_not_process_payment_error_message(cls):
+        return "Cannot checkout using an expired card"

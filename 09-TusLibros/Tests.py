@@ -1,10 +1,16 @@
 from ShoppingCart import *
+from Ticket import *
+from CreditCard import *
+from Cashier import *
+from MonthOfYear import *
 from TusLibrosExceptions import *
+from datetime import datetime
+from PublisherTestObjectsFactory import *
 import unittest
 
 class MockMerchantProcessor:
     def process_payment(self, total, credit_card):
-        if credit_card[0] == "4380500008685118":
+        if credit_card._credit_card_number == "4380500008685118":
             raise PaymentRejected("The payment was rejected by the merchant processor")
         
 
@@ -82,20 +88,16 @@ class CashierTest(unittest.TestCase):
         self.book_to_add = "9788498387087"
         self.second_book_to_add = "9788498389722"
         self.expensive_book_to_add = "9789878000121"
-
+        self._object_factory = PublisherTestObjectsFactory()
         self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
         self.shopping_cart_with_a_book = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
         self.shopping_cart_with_a_book.add_book(self.book_to_add, 1)
 
-        self.valid_credit_card = ["1234567890987654", self._create_valid_expiration_date(), "Harry Potter"]
+        self.valid_credit_card = self._object_factory.a_valid_credit_card()
         self.ledger = []
         self.price_list = {self.book_to_add: 50.0, self.second_book_to_add: 75.0, self.expensive_book_to_add: 300000000000000.0}
         self.cashier = Cashier(self.ledger, self.price_list, MockMerchantProcessor())
 
-    def _create_valid_expiration_date(self):
-        rundate = datetime.now()
-        expiration_date = rundate.replace(year=rundate.year + 5, day=1)
-        return expiration_date.strftime('%m/%Y')
 
     def test01_cannot_checkout_empty_cart(self):
         with self.assertRaises(CannotCheckoutEmptyCart):
@@ -122,19 +124,22 @@ class CashierTest(unittest.TestCase):
         self.assertTrue(ticket in self.ledger)
 
     def test04_cannot_check_out_with_expired_credit_card(self):
-        with self.assertRaises(ExpiredCreditCard):
-            self.cashier.check_out(self.shopping_cart_with_a_book, ["3734567890987654", "08/2003", "Enrique el antiguo"])
-        self.assertFalse(self.ledger)
+        try: 
+            self.cashier.check_out(self.shopping_cart_with_a_book, self._object_factory.an_expired_credit_card())
+            self.fail()
+        except Exception as expected_exception:
+            self.assertEqual(str(expected_exception), Cashier.cannot_checkout_using_an_expired_card_error_message())
+            self.assertFalse(self.ledger)
 
-    def test05_cannot_check_out_with_invalid_credit_card_number(self):
-        with self.assertRaises(InvalidCreditCardNumber):
-            self.cashier.check_out(self.shopping_cart_with_a_book, ["sadasdasas456", self._create_valid_expiration_date(), "Hackermann"])
-        self.assertFalse(self.ledger)
+    # def test05_cannot_check_out_with_invalid_credit_card_number(self):
+    #     with self.assertRaises(InvalidCreditCardNumber):
+    #         self.cashier.check_out(self.shopping_cart_with_a_book, ["sadasdasas456", self._create_valid_expiration_date(), "Hackermann"])
+    #     self.assertFalse(self.ledger)
 
-    def test06_cannot_check_out_with_wrong_credit_card_owner_name(self):
-        with self.assertRaises(InvalidCreditCardOwner):
-            self.cashier.check_out(self.shopping_cart_with_a_book, ["1234567890987654", self._create_valid_expiration_date(), "Jose Francisco de San Martín y Matorras"])
-        self.assertFalse(self.ledger)
+    # def test06_cannot_check_out_with_wrong_credit_card_owner_name(self):
+    #     with self.assertRaises(InvalidCreditCardOwner):
+    #         self.cashier.check_out(self.shopping_cart_with_a_book, ["1234567890987654", self._create_valid_expiration_date(), "Jose Francisco de San Martín y Matorras"])
+    #     self.assertFalse(self.ledger)
 
     def test07_cannot_check_out_excessivelly_expensive_purchase(self):
         self.shopping_cart.add_book(self.expensive_book_to_add, 4)
@@ -145,7 +150,8 @@ class CashierTest(unittest.TestCase):
 
     def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
         with self.assertRaises(PaymentRejected):
-            self.cashier.check_out(self.shopping_cart_with_a_book, ["4380500008685118", self._create_valid_expiration_date(), "Mauro Rizzi"])
+            self.cashier.check_out(self.shopping_cart_with_a_book, CreditCard("hola", "4380500008685118", MonthOfYear(6, datetime.now().year + 1)))
+
         self.assertFalse(self.ledger)
 
 class TicketTest(unittest.TestCase):
