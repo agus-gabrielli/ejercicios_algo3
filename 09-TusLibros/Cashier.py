@@ -10,9 +10,10 @@ class Cashier:
         self._merchant_processor = merchant_processor
 
     def check_out(self, client_cart, credit_card):
+        # Aca es uno o el otro, no podemos modularizar expiration y is empty no.
         if client_cart.is_empty():
-            raise CannotCheckoutEmptyCart
-        self._check_if_expired(credit_card)
+            raise Exception(self.__class__.cannot_checkout_an_empty_cart_error_message())
+        self._check_expiration_of(credit_card)
 
         ticket = self._process_items_of(client_cart)
 
@@ -30,14 +31,13 @@ class Cashier:
 
         return ticket
 
-    def _check_if_expired(self, credit_card):
+    def _check_expiration_of(self, credit_card):
         if credit_card.is_expired_on(datetime.now()):
             raise Exception(self.__class__.cannot_checkout_using_an_expired_card_error_message())
 
-
     def _check_for_transaction_amount_overflow(self, total):
         if total > 999999999999999.99:
-            raise TransactionAmountOverflow("El importe de la compra excede lo permitido")
+            raise Exception(self.__class__.cannot_checkout_purchase_total_too_large_error_message())
 
     @classmethod
     def cannot_checkout_an_empty_cart_error_message(cls):
@@ -48,5 +48,5 @@ class Cashier:
         return "Cannot checkout using an expired card"
 
     @classmethod
-    def could_not_process_payment_error_message(cls):
-        return "Cannot checkout using an expired card"
+    def cannot_checkout_purchase_total_too_large_error_message(cls):
+        return "The total of the purchase exceeds the allowed limit"

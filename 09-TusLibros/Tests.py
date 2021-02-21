@@ -83,6 +83,7 @@ class ShoppingCartTests(unittest.TestCase):
             self.shopping_cart.add_book(self.book_to_add, -2)
         self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
 
+
 class CashierTest(unittest.TestCase):
     def setUp(self):
         self.book_to_add = "9788498387087"
@@ -100,9 +101,12 @@ class CashierTest(unittest.TestCase):
 
 
     def test01_cannot_checkout_empty_cart(self):
-        with self.assertRaises(CannotCheckoutEmptyCart):
+        try:
             self.cashier.check_out(self.shopping_cart, self.valid_credit_card)
-        self.assertFalse(self.ledger)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Cashier.cannot_checkout_an_empty_cart_error_message())
+            self.assertFalse(self.ledger)
 
     def test02_can_check_out_single_book(self):
         self.shopping_cart.add_book(self.book_to_add, 1)
@@ -144,9 +148,12 @@ class CashierTest(unittest.TestCase):
     def test07_cannot_check_out_excessivelly_expensive_purchase(self):
         self.shopping_cart.add_book(self.expensive_book_to_add, 4)
 
-        with self.assertRaises(TransactionAmountOverflow):
+        try:
             self.cashier.check_out(self.shopping_cart, self.valid_credit_card)
-        self.assertFalse(self.ledger)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Cashier.cannot_checkout_purchase_total_too_large_error_message())
+            self.assertFalse(self.ledger)
 
     def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
         with self.assertRaises(PaymentRejected):
