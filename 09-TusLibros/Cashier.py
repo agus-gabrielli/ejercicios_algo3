@@ -1,4 +1,3 @@
-from TusLibrosExceptions import *
 from datetime import datetime
 from Ticket import Ticket
 
