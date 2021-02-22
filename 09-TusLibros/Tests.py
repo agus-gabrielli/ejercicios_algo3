@@ -7,6 +7,7 @@ from datetime import datetime
 from PublisherTestObjectsFactory import *
 import unittest
 
+
 class MockMerchantProcessor:
     def process_payment(self, total, credit_card):
         if credit_card._credit_card_number == "4380500008685118":
