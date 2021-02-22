@@ -86,11 +86,12 @@ class ShoppingCartTests(unittest.TestCase):
 
 class CashierTest(unittest.TestCase):
     def setUp(self):
+        self._object_factory = PublisherTestObjectsFactory()
         self.book_to_add = "9788498387087"
         self.second_book_to_add = "9788498389722"
         self.expensive_book_to_add = "9789878000121"
-        self._object_factory = PublisherTestObjectsFactory()
-        self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
+        self.catalog = [self.book_to_add, self.second_book_to_add, self.expensive_book_to_add]
+        self.shopping_cart = ShoppingCart(self.catalog)
         self.shopping_cart_with_a_book = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
         self.shopping_cart_with_a_book.add_book(self.book_to_add, 1)
 
