@@ -3,7 +3,6 @@ from Ticket import *
 from CreditCard import *
 from Cashier import *
 from MonthOfYear import *
-from TusLibrosExceptions import *
 from datetime import datetime
 from PublisherTestObjectsFactory import *
 import unittest
@@ -11,8 +10,11 @@ import unittest
 class MockMerchantProcessor:
     def process_payment(self, total, credit_card):
         if credit_card._credit_card_number == "4380500008685118":
-            raise PaymentRejected("The payment was rejected by the merchant processor")
-        
+            raise Exception(self.__class__.generic_rejected_payment_error_message())
+
+    @classmethod
+    def generic_rejected_payment_error_message(cls):
+        return "The payment was rejected"
 
 #####################################################################
 #                                                                   #
@@ -161,10 +163,12 @@ class CashierTest(unittest.TestCase):
             self.assertFalse(self.ledger)
 
     def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
-        with self.assertRaises(PaymentRejected):
+        try:
             self.cashier.check_out(self.shopping_cart_with_a_book, CreditCard("hola", "4380500008685118", MonthOfYear(6, datetime.now().year + 1)))
-
-        self.assertFalse(self.ledger)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), MockMerchantProcessor.generic_rejected_payment_error_message())
+            self.assertFalse(self.ledger)
 
 class TicketTest(unittest.TestCase):
     def setUp(self):
