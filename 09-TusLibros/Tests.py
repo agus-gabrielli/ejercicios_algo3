@@ -16,10 +16,11 @@ import unittest
 class ShoppingCartTests(unittest.TestCase):
 
     def setUp(self):
-        self.book_to_add = "9788498387087"
-        self.second_book_to_add = "9788498389722"
-        self.third_book_to_add = "9789878000121"
-        self.shopping_cart = ShoppingCart([self.book_to_add, self.second_book_to_add, self.third_book_to_add])
+        self._test_objects_factory = PublisherTestObjectsFactory()
+        self.book_to_add = self._test_objects_factory.a_book_from_the_editorial()
+        self.second_book_to_add = self._test_objects_factory.the_editorial_catalog()[1]
+        self.third_book_to_add = self._test_objects_factory.the_editorial_catalog()[2]
+        self.shopping_cart = self._test_objects_factory.an_empty_cart()
         
     def add_multiple_books_to_cart(self, shopping_cart, list_of_books_to_add):
         for book_to_add, quantity in list_of_books_to_add.items():
@@ -86,19 +87,19 @@ class ShoppingCartTests(unittest.TestCase):
 
 class CashierTest(unittest.TestCase):
     def setUp(self):
-        self._object_factory = PublisherTestObjectsFactory()
-        self.book_to_add = "9788498387087"
-        self.second_book_to_add = "9788498389722"
-        self.expensive_book_to_add = "9789878000121"
-        self.catalog = [self.book_to_add, self.second_book_to_add, self.expensive_book_to_add]
-        self.shopping_cart = ShoppingCart(self.catalog)
-        self.shopping_cart_with_a_book = ShoppingCart([self.book_to_add, self.second_book_to_add, self.expensive_book_to_add])
-        self.shopping_cart_with_a_book.add_book(self.book_to_add, 1)
+        self._test_objects_factory = PublisherTestObjectsFactory()
+        self.book_to_add = self._test_objects_factory.a_book_from_the_editorial()
+        self.second_book_to_add = self._test_objects_factory.the_editorial_catalog()[1]
+        self.expensive_book_to_add = self._test_objects_factory.the_editorial_catalog()[2]
+        self.catalog = self._test_objects_factory.the_editorial_catalog()
+        self.shopping_cart = self._test_objects_factory.an_empty_cart()
+        self.shopping_cart_with_a_book = self._test_objects_factory.a_cart_with_a_book()
 
-        self.valid_credit_card = self._object_factory.a_valid_credit_card()
-        self.ledger = []
+        self.valid_credit_card = self._test_objects_factory.a_valid_credit_card()
+        self.ledger = self._test_objects_factory.an_empty_ledger()
+        # Me parece que deberiamos convertir el catalog en un price list y tenerloen el carrito, como cuando ibas al almacen y el producto tenia el sticker con el precio
         self.price_list = {self.book_to_add: 50.0, self.second_book_to_add: 75.0, self.expensive_book_to_add: 300000000000000.0}
-        self.cashier = Cashier(self.ledger, self.price_list, MockMerchantProcessor())
+        self.cashier = self._test_objects_factory.a_cashier(self.price_list, self.ledger)
 
     def test01_cannot_checkout_empty_cart(self):
         try:
@@ -129,7 +130,7 @@ class CashierTest(unittest.TestCase):
 
     def test04_cannot_check_out_with_expired_credit_card(self):
         try: 
-            self.cashier.check_out(self.shopping_cart_with_a_book, self._object_factory.an_expired_credit_card())
+            self.cashier.check_out(self.shopping_cart_with_a_book, self._test_objects_factory.an_expired_credit_card())
             self.fail()
         except Exception as expected_exception:
             self.assertEqual(str(expected_exception), Cashier.cannot_checkout_using_an_expired_card_error_message())

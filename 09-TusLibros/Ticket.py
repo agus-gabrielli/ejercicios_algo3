@@ -12,3 +12,6 @@ class Ticket:
 
     def total(self):
         return self._total
+
+    def __repr__(self):
+        return f"{self._items} Total: {self._total}"
