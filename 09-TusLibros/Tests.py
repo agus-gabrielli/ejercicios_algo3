@@ -2,6 +2,7 @@ from ShoppingCart import *
 from Ticket import *
 from CreditCard import *
 from Cashier import *
+from Storefront import *
 from MonthOfYear import *
 from datetime import datetime
 from PublisherTestObjectsFactory import *
@@ -158,7 +159,7 @@ class CashierTest(unittest.TestCase):
 
     def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
         try:
-            self.cashier.check_out(self.shopping_cart_with_a_book, CreditCard("hola", "4380500008685118", MonthOfYear(6, datetime.now().year + 1)))
+            self.cashier.check_out(self.shopping_cart_with_a_book, CreditCard("hola", self._test_objects_factory.a_stolen_credit_card_number(), MonthOfYear(6, datetime.now().year + 1)))
             self.fail()
         except Exception as thrown_exception:
             self.assertEqual(str(thrown_exception), MockMerchantProcessor.generic_rejected_payment_error_message())
@@ -197,6 +198,65 @@ class TicketTest(unittest.TestCase):
         self.ticket.add_item(not_purchased_item, 1, 50)
 
         self.assertFalse(self.ticket.contains_item(not_purchased_item, 3))
+
+class StorefrontTests(unittest.TestCase):
+    def test01_cannot_create_cart_with_invalid_credentials(self):
+        storefront = Storefront()
+        try: 
+            storefront.create_cart_for("Enrique_El_Antiguo", "contraseña")
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.invalid_credentials_error_message())
+
+    def test02_can_create_cart_with_valid_credentials(self):
+        storefront = Storefront()
+        client_id = "Mauro_Rizzi"
+        cart_id = storefront.create_cart_for(client_id, "12345")
+        self.assertTrue(storefront.client_has_cart(client_id, cart_id))
+
+    def test03_new_client_does_not_have_a_cart(self):
+        storefront = Storefront()
+        client_id = "Raúl"
+        self.assertFalse(storefront.client_has_cart(client_id, "id_invalido"))
+
+    def test04_client_that_created_one_cart_does_not_have_another_cart(self):
+        storefront = Storefront()
+        client_id = "Mauro_Rizzi"
+        cart_id = storefront.create_cart_for(client_id, "12345")
+        self.assertFalse(storefront.client_has_cart(client_id, cart_id + "invalid"))
+
+    def test05_two_different_carts_have_different_ids(self):
+        storefront = Storefront()
+        client_id = "Mauro_Rizzi"
+        first_cart_id = storefront.create_cart_for(client_id, "12345")
+        second_cart_id = storefront.create_cart_for(client_id, "12345")
+        self.assertNotEqual(first_cart_id, second_cart_id)
+
+    def test06_same_client_can_have_multiple_carts(self):
+        storefront = Storefront()
+        client_id = "Mauro_Rizzi"
+        first_cart_id = storefront.create_cart_for(client_id, "12345")
+        second_cart_id = storefront.create_cart_for(client_id, "12345")
+        self.assertTrue(storefront.client_has_cart(client_id, first_cart_id))
+        self.assertTrue(storefront.client_has_cart(client_id, second_cart_id))
+
+    def test07_cannot_add_book_to_cart_with_invalid_id(self):
+        storefront = Storefront()
+        try:
+            storefront.add_to_cart("juancito", "3434324324321234", 2)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.cannot_add_book_to_cart_with_invalid_id_error_message())
+
+    def test08_client_can_add_book_to_cart(self):
+        storefront = Storefront()
+        client_id = "Mauro_Rizzi"
+        cart_id = storefront.create_cart_for(client_id, "12345")
+        storefront.add_to_cart(cart_id, "3434324324321234", 2)
+        self.assertTrue(storefront.cart_contains(cart_id, "3434324324321234", 2))
+
+
+
 
 #####################################################################
 #                                                                   #

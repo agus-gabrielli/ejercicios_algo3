@@ -14,6 +14,9 @@ class PublisherTestObjectsFactory:
         june_next_year = MonthOfYear(6, self.now().year + 1)
         return CreditCard('Juan Perez', "1234567891234567", june_next_year)
 
+    def a_stolen_credit_card_number(self):
+        return "4380500008685118"
+
     def an_empty_cart(self):
         return ShoppingCart(self.the_editorial_catalog())
 
