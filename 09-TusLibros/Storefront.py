@@ -1,35 +1,27 @@
 from ShoppingCart import *
 
+
 class Storefront:
 
-    def __init__(self):
-        self._clients_credentials = {"Mauro_Rizzi": "12345"}
-        self._clients_carts = {}     
-        self._carts_clients = {} 
+    def __init__(self, publishers_catalog):
+        self._client_credentials = {"Mauro_Rizzi": "123457", "Agustin_Gabrielli": "pepito"}
+        self._carts = {}
+        self._book_catalog = publishers_catalog
 
     def create_cart_for(self, client_id, client_password):
-        if client_id not in self._clients_credentials and client_password not in self._clients_credentials.values():
+        if client_id not in self._client_credentials or not self._client_credentials[client_id] == client_password:
             raise Exception(self.__class__.invalid_credentials_error_message())
 
-        if client_id not in self._clients_carts:
-            self._clients_carts[client_id] = []
-        cart_id = client_id + str(len(self._clients_carts[client_id]))
-        self._clients_carts[client_id].append(cart_id)
-        self._carts_clients[cart_id] = client_id
+        cart = ShoppingCart(self._book_catalog)
+        cart_id = "asdasdas"
+        self._carts[cart_id] = cart
         return cart_id
 
-    def client_has_cart(self, client_id, cart_id):
-        if client_id not in self._clients_carts: 
-            return False
-
-        return cart_id in self._clients_carts[client_id]
+    def list_cart_content(self, client_id, carti_id):
+        return self._carts[carti_id].list_content()
 
     def add_to_cart(self, cart_id, book_isbn, book_quantity):
-        if cart_id not in self._carts_clients: 
-            raise Exception(self.__class__.cannot_add_book_to_cart_with_invalid_id_error_message())
-
-    def cart_contains(self, cart_id, book_isbn, book_quantity):
-        return True
+        self._carts[cart_id].add_book(book_isbn, book_quantity)
 
     @classmethod
     def invalid_credentials_error_message(cls):

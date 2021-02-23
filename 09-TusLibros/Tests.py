@@ -201,7 +201,7 @@ class TicketTest(unittest.TestCase):
 
 class StorefrontTests(unittest.TestCase):
     def test01_cannot_create_cart_with_invalid_credentials(self):
-        storefront = Storefront()
+        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
         try: 
             storefront.create_cart_for("Enrique_El_Antiguo", "contraseña")
             self.fail()
@@ -209,52 +209,71 @@ class StorefrontTests(unittest.TestCase):
             self.assertEqual(str(thrown_exception), Storefront.invalid_credentials_error_message())
 
     def test02_can_create_cart_with_valid_credentials(self):
-        storefront = Storefront()
+        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
         client_id = "Mauro_Rizzi"
-        cart_id = storefront.create_cart_for(client_id, "12345")
-        self.assertTrue(storefront.client_has_cart(client_id, cart_id))
+        cart_id = storefront.create_cart_for(client_id, "123457")
+        self.assertEquals(len(storefront.list_cart_content(client_id, cart_id)), 0)
 
-    def test03_new_client_does_not_have_a_cart(self):
-        storefront = Storefront()
-        client_id = "Raúl"
-        self.assertFalse(storefront.client_has_cart(client_id, "id_invalido"))
-
-    def test04_client_that_created_one_cart_does_not_have_another_cart(self):
-        storefront = Storefront()
+    def test03_client_can_add_books_to_cart(self):
+        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
         client_id = "Mauro_Rizzi"
-        cart_id = storefront.create_cart_for(client_id, "12345")
-        self.assertFalse(storefront.client_has_cart(client_id, cart_id + "invalid"))
+        a_book = "9788498387087"
+        cart_id = storefront.create_cart_for(client_id, "123457")
+        storefront.add_to_cart(cart_id, a_book, 1)
+        self.assertEquals(storefront.list_cart_content(client_id, cart_id), {a_book: 1})
 
-    def test05_two_different_carts_have_different_ids(self):
-        storefront = Storefront()
-        client_id = "Mauro_Rizzi"
-        first_cart_id = storefront.create_cart_for(client_id, "12345")
-        second_cart_id = storefront.create_cart_for(client_id, "12345")
-        self.assertNotEqual(first_cart_id, second_cart_id)
+    def test04_multiple_clients_can_add_books_to_cart(self):
+        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
+        first_client_id = "Mauro_Rizzi"
+        second_client_id = "Agustin_Gabrielli"
+        a_book = "9788498387087"
+        first_client_cart_id = storefront.create_cart_for(first_client_id, "123457")
+        second_client_cart_id = storefront.create_cart_for(second_client_id, "pepito")
+        storefront.add_to_cart(second_client_cart_id, a_book, 1)
+        self.assertEquals(storefront.list_cart_content(first_client_id, first_client_cart_id), {})
+        self.assertEquals(storefront.list_cart_content(second_client_id, second_client_cart_id), {a_book: 1})
 
-    def test06_same_client_can_have_multiple_carts(self):
-        storefront = Storefront()
-        client_id = "Mauro_Rizzi"
-        first_cart_id = storefront.create_cart_for(client_id, "12345")
-        second_cart_id = storefront.create_cart_for(client_id, "12345")
-        self.assertTrue(storefront.client_has_cart(client_id, first_cart_id))
-        self.assertTrue(storefront.client_has_cart(client_id, second_cart_id))
-
-    def test07_cannot_add_book_to_cart_with_invalid_id(self):
-        storefront = Storefront()
-        try:
-            storefront.add_to_cart("juancito", "3434324324321234", 2)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.cannot_add_book_to_cart_with_invalid_id_error_message())
-
-    def test08_client_can_add_book_to_cart(self):
-        storefront = Storefront()
-        client_id = "Mauro_Rizzi"
-        cart_id = storefront.create_cart_for(client_id, "12345")
-        storefront.add_to_cart(cart_id, "3434324324321234", 2)
-        self.assertTrue(storefront.cart_contains(cart_id, "3434324324321234", 2))
-
+    # def test03_new_client_does_not_have_a_cart(self):
+    #     storefront = Storefront()
+    #     client_id = "Raúl"
+    #     self.assertFalse(storefront.client_has_cart(client_id, "id_invalido"))
+    #
+    # def test04_client_that_created_one_cart_does_not_have_another_cart(self):
+    #     storefront = Storefront()
+    #     client_id = "Mauro_Rizzi"
+    #     cart_id = storefront.create_cart_for(client_id, "12345")
+    #     self.assertFalse(storefront.client_has_cart(client_id, cart_id + "invalid"))
+    #
+    # def test05_two_different_carts_have_different_ids(self):
+    #     storefront = Storefront()
+    #     client_id = "Mauro_Rizzi"
+    #     first_cart_id = storefront.create_cart_for(client_id, "12345")
+    #     second_cart_id = storefront.create_cart_for(client_id, "12345")
+    #     self.assertNotEqual(first_cart_id, second_cart_id)
+    #
+    # def test06_same_client_can_have_multiple_carts(self):
+    #     storefront = Storefront()
+    #     client_id = "Mauro_Rizzi"
+    #     first_cart_id = storefront.create_cart_for(client_id, "12345")
+    #     second_cart_id = storefront.create_cart_for(client_id, "12345")
+    #     self.assertTrue(storefront.client_has_cart(client_id, first_cart_id))
+    #     self.assertTrue(storefront.client_has_cart(client_id, second_cart_id))
+    #
+    # def test07_cannot_add_book_to_cart_with_invalid_id(self):
+    #     storefront = Storefront()
+    #     try:
+    #         storefront.add_to_cart("juancito", "3434324324321234", 2)
+    #         self.fail()
+    #     except Exception as thrown_exception:
+    #         self.assertEqual(str(thrown_exception), Storefront.cannot_add_book_to_cart_with_invalid_id_error_message())
+    #
+    # def test08_client_can_add_book_to_cart(self):
+    #     storefront = Storefront()
+    #     client_id = "Mauro_Rizzi"
+    #     cart_id = storefront.create_cart_for(client_id, "12345")
+    #     storefront.add_to_cart(cart_id, "3434324324321234", 2)
+    #     self.assertTrue(storefront.cart_contains(cart_id, "3434324324321234", 2))
+    #
 
 
 
