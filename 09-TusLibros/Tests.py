@@ -85,7 +85,6 @@ class ShoppingCartTests(unittest.TestCase):
             self.assertEqual(str(thrown_exception), ShoppingCart.cannot_add_zero_or_negative_amount_of_books_to_cart_error_message())
             self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
 
-
 class CashierTest(unittest.TestCase):
     def setUp(self):
         self._test_objects_factory = PublisherTestObjectsFactory()
@@ -137,17 +136,7 @@ class CashierTest(unittest.TestCase):
             self.assertEqual(str(expected_exception), Cashier.cannot_checkout_using_an_expired_card_error_message())
             self.assertFalse(self.ledger)
 
-    # def test05_cannot_check_out_with_invalid_credit_card_number(self):
-    #     with self.assertRaises(InvalidCreditCardNumber):
-    #         self.cashier.check_out(self.shopping_cart_with_a_book, ["sadasdasas456", self._create_valid_expiration_date(), "Hackermann"])
-    #     self.assertFalse(self.ledger)
-
-    # def test06_cannot_check_out_with_wrong_credit_card_owner_name(self):
-    #     with self.assertRaises(InvalidCreditCardOwner):
-    #         self.cashier.check_out(self.shopping_cart_with_a_book, ["1234567890987654", self._create_valid_expiration_date(), "Jose Francisco de San Martín y Matorras"])
-    #     self.assertFalse(self.ledger)
-
-    def test07_cannot_check_out_excessivelly_expensive_purchase(self):
+    def test05_cannot_check_out_excessivelly_expensive_purchase(self):
         self.shopping_cart.add_book(self.expensive_book_to_add, 4)
 
         try:
@@ -157,7 +146,7 @@ class CashierTest(unittest.TestCase):
             self.assertEqual(str(thrown_exception), Cashier.cannot_checkout_purchase_total_too_large_error_message())
             self.assertFalse(self.ledger)
 
-    def test08_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
+    def test06_check_out_is_stopped_when_merchant_processor_rejects_payment(self):
         try:
             self.cashier.check_out(self.shopping_cart_with_a_book, CreditCard("hola", self._test_objects_factory.a_stolen_credit_card_number(), MonthOfYear(6, datetime.now().year + 1)))
             self.fail()
@@ -200,82 +189,102 @@ class TicketTest(unittest.TestCase):
         self.assertFalse(self.ticket.contains_item(not_purchased_item, 3))
 
 class StorefrontTests(unittest.TestCase):
+    def setUp(self):
+        self._object_factory = PublisherTestObjectsFactory()
+        self._storefront = self._object_factory.a_storefront()
+        
     def test01_cannot_create_cart_with_invalid_credentials(self):
-        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
+        invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
+
         try: 
-            storefront.create_cart_for("Enrique_El_Antiguo", "contraseña")
+            self._storefront.create_cart_for(invalid_client_id, invalid_client_password)
             self.fail()
         except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.invalid_credentials_error_message())
+            self.assertEqual(str(thrown_exception), LoginSystemMock.invalid_credentials_error_message())
 
     def test02_can_create_cart_with_valid_credentials(self):
-        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
-        client_id = "Mauro_Rizzi"
-        cart_id = storefront.create_cart_for(client_id, "123457")
-        self.assertEquals(len(storefront.list_cart_content(client_id, cart_id)), 0)
+        client_id, client_password = self._object_factory.a_valid_client_id_and_password()
+        cart_id = self._storefront.create_cart_for(client_id, client_password)
+
+        self._assert_cart_with_this_id_is_empty(cart_id)
 
     def test03_client_can_add_books_to_cart(self):
-        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
-        client_id = "Mauro_Rizzi"
-        a_book = "9788498387087"
-        cart_id = storefront.create_cart_for(client_id, "123457")
-        storefront.add_to_cart(cart_id, a_book, 1)
-        self.assertEquals(storefront.list_cart_content(client_id, cart_id), {a_book: 1})
+        a_book = self._object_factory.a_book_from_the_editorial()
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+
+        self._storefront.add_to_cart(cart_id, a_book, 1)
+
+        self._assert_cart_with_this_id_only_contains(cart_id, a_book)
 
     def test04_multiple_clients_can_add_books_to_cart(self):
-        storefront = Storefront(["9788498387087", "9788498389722", "9789878000121"])
-        first_client_id = "Mauro_Rizzi"
-        second_client_id = "Agustin_Gabrielli"
-        a_book = "9788498387087"
-        first_client_cart_id = storefront.create_cart_for(first_client_id, "123457")
-        second_client_cart_id = storefront.create_cart_for(second_client_id, "pepito")
-        storefront.add_to_cart(second_client_cart_id, a_book, 1)
-        self.assertEquals(storefront.list_cart_content(first_client_id, first_client_cart_id), {})
-        self.assertEquals(storefront.list_cart_content(second_client_id, second_client_cart_id), {a_book: 1})
+        first_client_id, first_client_password = self._object_factory.another_valid_client_id_and_password()
+        second_client_id, second_client_password = self._object_factory.another_valid_client_id_and_password()
+        a_book = self._object_factory.a_book_from_the_editorial()
 
-    # def test03_new_client_does_not_have_a_cart(self):
-    #     storefront = Storefront()
-    #     client_id = "Raúl"
-    #     self.assertFalse(storefront.client_has_cart(client_id, "id_invalido"))
-    #
-    # def test04_client_that_created_one_cart_does_not_have_another_cart(self):
-    #     storefront = Storefront()
-    #     client_id = "Mauro_Rizzi"
-    #     cart_id = storefront.create_cart_for(client_id, "12345")
-    #     self.assertFalse(storefront.client_has_cart(client_id, cart_id + "invalid"))
-    #
-    # def test05_two_different_carts_have_different_ids(self):
-    #     storefront = Storefront()
-    #     client_id = "Mauro_Rizzi"
-    #     first_cart_id = storefront.create_cart_for(client_id, "12345")
-    #     second_cart_id = storefront.create_cart_for(client_id, "12345")
-    #     self.assertNotEqual(first_cart_id, second_cart_id)
-    #
-    # def test06_same_client_can_have_multiple_carts(self):
-    #     storefront = Storefront()
-    #     client_id = "Mauro_Rizzi"
-    #     first_cart_id = storefront.create_cart_for(client_id, "12345")
-    #     second_cart_id = storefront.create_cart_for(client_id, "12345")
-    #     self.assertTrue(storefront.client_has_cart(client_id, first_cart_id))
-    #     self.assertTrue(storefront.client_has_cart(client_id, second_cart_id))
-    #
-    # def test07_cannot_add_book_to_cart_with_invalid_id(self):
-    #     storefront = Storefront()
-    #     try:
-    #         storefront.add_to_cart("juancito", "3434324324321234", 2)
-    #         self.fail()
-    #     except Exception as thrown_exception:
-    #         self.assertEqual(str(thrown_exception), Storefront.cannot_add_book_to_cart_with_invalid_id_error_message())
-    #
-    # def test08_client_can_add_book_to_cart(self):
-    #     storefront = Storefront()
-    #     client_id = "Mauro_Rizzi"
-    #     cart_id = storefront.create_cart_for(client_id, "12345")
-    #     storefront.add_to_cart(cart_id, "3434324324321234", 2)
-    #     self.assertTrue(storefront.cart_contains(cart_id, "3434324324321234", 2))
-    #
+        first_client_cart_id = self._storefront.create_cart_for(first_client_id, first_client_password)
+        second_client_cart_id = self._storefront.create_cart_for(second_client_id, second_client_password)
+        self._storefront.add_to_cart(second_client_cart_id, a_book, 1)
 
+        self._assert_cart_with_this_id_is_empty(first_client_cart_id)
+        self._assert_cart_with_this_id_only_contains(second_client_cart_id, a_book)
+        
+    def test05_cannot_add_book_to_invalid_cart(self):
+        try:
+            self._storefront.add_to_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_book_from_the_editorial(), 1)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
 
+    def test06_cannot_list_cart_content_of_invalid_cart(self):
+        try:
+            self._storefront.list_cart_content(self._object_factory.an_invalid_cart_id())
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
+
+    def test07_cannot_checkout_cart_with_invalid_id(self):
+        try:
+            self._storefront.check_out_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_valid_credit_card())
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
+
+    def test08_client_can_make_a_purchase(self):
+        client_id, password = self._object_factory.a_valid_client_id_and_password()
+        cart_id = self._storefront.create_cart_for(client_id, password)
+        a_book = self._object_factory.a_book_from_the_editorial()
+        self._storefront.add_to_cart(cart_id, a_book, 1)
+        
+        transaction_id = self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
+        self.assertFalse(len(transaction_id) == 0)
+        self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, 1))
+        self.assertEqual(self._storefront.list_purchases(client_id, password).total(), 50)
+
+    def test09_client_can_make_multiple_purchases(self):
+        client_id, password = self._object_factory.a_valid_client_id_and_password()
+        a_book = self._object_factory.a_book_from_the_editorial()
+
+        first_cart_id = self._storefront.create_cart_for(client_id, password)
+        self._storefront.add_to_cart(first_cart_id, a_book, 1)
+        first_transaction_id = self._storefront.check_out_cart(first_cart_id, self._object_factory.a_valid_credit_card())
+
+        second_cart_id = self._storefront.create_cart_for(client_id, password)
+        self._storefront.add_to_cart(second_cart_id, a_book, 3)
+        second_transaction_id = self._storefront.check_out_cart(second_cart_id, self._object_factory.a_valid_credit_card())
+
+        self.assertNotEqual(first_transaction_id, second_transaction_id)
+        self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, 4))
+        self.assertEqual(self._storefront.list_purchases(client_id, password).total(), 200)
+
+#test10 --> invalid client id 
+
+    def _assert_cart_with_this_id_is_empty(self, cart_id):
+            self.assertEqual(len(self._storefront.list_cart_content(cart_id)), 0)
+
+    def _assert_cart_with_this_id_only_contains(self, cart_id, a_book):
+        cart_content = self._storefront.list_cart_content(cart_id)
+        self.assertTrue(a_book in cart_content)
+        self.assertEqual(len(cart_content), 1)
 
 #####################################################################
 #                                                                   #

@@ -4,7 +4,8 @@ from ShoppingCart import *
 from Cashier import *
 from CreditCard import *
 from MonthOfYear import *
-
+from Storefront import *
+from LoginSystemMock import *
 
 class PublisherTestObjectsFactory:
     def a_cashier(self, price_list, a_ledger):
@@ -38,5 +39,32 @@ class PublisherTestObjectsFactory:
     def a_book_from_the_editorial(self):
         return self.the_editorial_catalog()[0]
 
+    def price_list_from_the_editorial(self):
+        return {"9788498387087": 50.0, "9788498389722": 75.0, "9789878000121": 300000000000000.0}
+
     def now(self):
         return datetime.now()
+    
+    def user_credentials(self):
+        return {"Mauro_Rizzi": "123457", "Agustin_Gabrielli": "pepito"}
+
+    def a_storefront(self):
+        return Storefront(self.the_editorial_catalog(), LoginSystemMock(self.user_credentials()), self.price_list_from_the_editorial(), MockMerchantProcessor())
+
+    def a_valid_client_id_and_password(self):
+        return "Mauro_Rizzi", "123457"
+
+    def another_valid_client_id_and_password(self):
+        return "Agustin_Gabrielli", "pepito"
+
+    def an_invalid_client_id_and_password(self):
+        return "Pepito", "123"
+    
+    def an_invalid_cart_id(self):
+        return "Juancito"
+
+    def an_id_of_an_empty_cart(self, storefront):
+        client_id, password = self.a_valid_client_id_and_password()
+
+        return storefront.create_cart_for(client_id, password)
+    
