@@ -191,7 +191,8 @@ class TicketTest(unittest.TestCase):
 class StorefrontTests(unittest.TestCase):
     def setUp(self):
         self._object_factory = PublisherTestObjectsFactory()
-        self._storefront = self._object_factory.a_storefront()
+        self._clock_mock = ClockMock()
+        self._storefront = self._object_factory.a_storefront(self._clock_mock)
         
     def test01_cannot_create_cart_with_invalid_credentials(self):
         invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
@@ -276,7 +277,51 @@ class StorefrontTests(unittest.TestCase):
         self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, 4))
         self.assertEqual(self._storefront.list_purchases(client_id, password).total(), 200)
 
-#test10 --> invalid client id 
+    def test10_cannot_list_purchases_with_invalid_credentials(self):
+        invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
+
+        try: 
+            self._storefront.list_purchases(invalid_client_id, invalid_client_password)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), LoginSystemMock.invalid_credentials_error_message())
+#extraer este metodo de try except q lo usamos mil veces
+
+    def test11_cannot_add_books_to_an_expired_cart(self): 
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+    
+        self._clock_mock.forward_time(60)
+
+        try: 
+            self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())
+        
+    def test12_cannot_list_content_of_an_expired_cart(self): 
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+    
+        self._clock_mock.forward_time(60)
+
+        try: 
+            self._storefront.list_cart_content(cart_id)
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())
+
+    def test13_cannot_checkout_an_expired_cart(self): 
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+        self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+
+        self._clock_mock.forward_time(60)
+
+        try: 
+            self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())      
+       
+    #actions reset expiration time 
 
     def _assert_cart_with_this_id_is_empty(self, cart_id):
             self.assertEqual(len(self._storefront.list_cart_content(cart_id)), 0)

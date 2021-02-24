@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import *
 from MockMerchantProcessor import *
+from ClockMock import *
 from ShoppingCart import *
 from Cashier import *
 from CreditCard import *
@@ -48,8 +49,8 @@ class PublisherTestObjectsFactory:
     def user_credentials(self):
         return {"Mauro_Rizzi": "123457", "Agustin_Gabrielli": "pepito"}
 
-    def a_storefront(self):
-        return Storefront(self.the_editorial_catalog(), LoginSystemMock(self.user_credentials()), self.price_list_from_the_editorial(), MockMerchantProcessor())
+    def a_storefront(self, clock_mock):
+        return Storefront(self.the_editorial_catalog(), LoginSystemMock(self.user_credentials()), self.price_list_from_the_editorial(), MockMerchantProcessor(), clock_mock, 30)
 
     def a_valid_client_id_and_password(self):
         return "Mauro_Rizzi", "123457"
