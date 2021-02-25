@@ -1,4 +1,3 @@
-
 class LoginSystemMock:
     def __init__(self, user_credentials):
         self._user_credentials = user_credentials

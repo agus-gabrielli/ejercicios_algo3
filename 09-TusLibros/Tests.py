@@ -1,12 +1,10 @@
-from ShoppingCart import *
 from Ticket import *
 from CreditCard import *
-from Cashier import *
 from Storefront import *
 from MonthOfYear import *
-from datetime import datetime
 from PublisherTestObjectsFactory import *
 import unittest
+
 
 #####################################################################
 #                                                                   #
@@ -82,6 +80,7 @@ class ShoppingCartTests(unittest.TestCase):
             self.assertEqual(str(thrown_exception), ShoppingCart.cannot_add_zero_or_negative_amount_of_books_to_cart_error_message())
             self.assertFalse(self.shopping_cart.contains(self.book_to_add, -2))
 
+
 class CashierTest(unittest.TestCase):
     def setUp(self):
         self._test_objects_factory = PublisherTestObjectsFactory()
@@ -149,6 +148,7 @@ class CashierTest(unittest.TestCase):
             self.assertEqual(str(thrown_exception), MockMerchantProcessor.generic_rejected_payment_error_message())
             self.assertFalse(self.ledger)
 
+
 class TicketTest(unittest.TestCase):
     def setUp(self):
         self.ticket = Ticket()
@@ -184,10 +184,15 @@ class TicketTest(unittest.TestCase):
         self.assertFalse(self.ticket.contains_item(not_purchased_item, 3))
 
 class StorefrontTests(unittest.TestCase):
+
+        ###########################         SETUP        ###########################
+
     def setUp(self):
         self._object_factory = PublisherTestObjectsFactory()
         self._clock_mock = ClockMock()
         self._storefront = self._object_factory.a_storefront(self._clock_mock)
+
+        ###########################         TESTS        ###########################
         
     def test01_client_cannot_create_cart_with_invalid_credentials(self):
         invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
@@ -324,6 +329,7 @@ class StorefrontTests(unittest.TestCase):
         collaboration_to_assert = lambda: self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
         self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_already_checked_out_error_message())
 
+        ###########################         METODOS PRIVADOS        ###########################
 
     def _assert_client_has_only_purchased(self, client_id, password, a_book, book_quantity):
         total_price = self._object_factory.the_editorial_catalog()[a_book] * book_quantity
@@ -332,7 +338,7 @@ class StorefrontTests(unittest.TestCase):
         self.assertEqual(self._storefront.list_purchases(client_id, password).total(), total_price)
 
     def _assert_cart_with_this_id_is_empty(self, cart_id):
-            self.assertEqual(len(self._storefront.list_cart_content(cart_id)), 0)
+        self.assertEqual(len(self._storefront.list_cart_content(cart_id)), 0)
 
     def _assert_cart_with_this_id_only_contains(self, cart_id, a_book):
         cart_content = self._storefront.list_cart_content(cart_id)
@@ -345,6 +351,7 @@ class StorefrontTests(unittest.TestCase):
             self.fail()
         except Exception as thrown_exception:
             self.assertEqual(str(thrown_exception), error_message)
+
 
 #####################################################################
 #                                                                   #

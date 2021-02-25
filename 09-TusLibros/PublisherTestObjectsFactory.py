@@ -8,6 +8,7 @@ from MonthOfYear import *
 from Storefront import *
 from LoginSystemMock import *
 
+
 class PublisherTestObjectsFactory:
     def a_cashier(self, price_list, a_ledger):
         return Cashier(a_ledger, price_list, MockMerchantProcessor())

@@ -11,8 +11,6 @@ class Ticket:
 
         self._total += item_price * quantity
 
-        
-
     def contains_item(self, item, quantity):
         return item in self._items and self._items[item] == quantity
 
