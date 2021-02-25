@@ -8,7 +8,6 @@ from datetime import datetime
 from PublisherTestObjectsFactory import *
 import unittest
 
-
 #####################################################################
 #                                                                   #
 #                       CLASE TESTCASE                              #
@@ -18,9 +17,7 @@ class ShoppingCartTests(unittest.TestCase):
 
     def setUp(self):
         self._test_objects_factory = PublisherTestObjectsFactory()
-        self.book_to_add = self._test_objects_factory.a_book_from_the_editorial()
-        self.second_book_to_add = self._test_objects_factory.the_editorial_catalog()[1]
-        self.third_book_to_add = self._test_objects_factory.the_editorial_catalog()[2]
+        self.book_to_add, self.second_book_to_add, self.third_book_to_add = self._test_objects_factory.the_editorial_catalog().keys()
         self.shopping_cart = self._test_objects_factory.an_empty_cart()
         
     def add_multiple_books_to_cart(self, shopping_cart, list_of_books_to_add):
@@ -88,9 +85,7 @@ class ShoppingCartTests(unittest.TestCase):
 class CashierTest(unittest.TestCase):
     def setUp(self):
         self._test_objects_factory = PublisherTestObjectsFactory()
-        self.book_to_add = self._test_objects_factory.a_book_from_the_editorial()
-        self.second_book_to_add = self._test_objects_factory.the_editorial_catalog()[1]
-        self.expensive_book_to_add = self._test_objects_factory.the_editorial_catalog()[2]
+        self.book_to_add, self.second_book_to_add, self.expensive_book_to_add = self._test_objects_factory.the_editorial_catalog().keys()
         self.catalog = self._test_objects_factory.the_editorial_catalog()
         self.shopping_cart = self._test_objects_factory.an_empty_cart()
         self.shopping_cart_with_a_book = self._test_objects_factory.a_cart_with_a_book()
@@ -194,16 +189,13 @@ class StorefrontTests(unittest.TestCase):
         self._clock_mock = ClockMock()
         self._storefront = self._object_factory.a_storefront(self._clock_mock)
         
-    def test01_cannot_create_cart_with_invalid_credentials(self):
+    def test01_client_cannot_create_cart_with_invalid_credentials(self):
         invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
 
-        try: 
-            self._storefront.create_cart_for(invalid_client_id, invalid_client_password)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), LoginSystemMock.invalid_credentials_error_message())
+        collaboration_to_assert = lambda: self._storefront.create_cart_for(invalid_client_id, invalid_client_password)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, LoginSystemMock.invalid_credentials_error_message())   
 
-    def test02_can_create_cart_with_valid_credentials(self):
+    def test02_client_can_create_cart_with_valid_credentials(self):
         client_id, client_password = self._object_factory.a_valid_client_id_and_password()
         cart_id = self._storefront.create_cart_for(client_id, client_password)
 
@@ -218,7 +210,7 @@ class StorefrontTests(unittest.TestCase):
         self._assert_cart_with_this_id_only_contains(cart_id, a_book)
 
     def test04_multiple_clients_can_add_books_to_cart(self):
-        first_client_id, first_client_password = self._object_factory.another_valid_client_id_and_password()
+        first_client_id, first_client_password = self._object_factory.a_valid_client_id_and_password()
         second_client_id, second_client_password = self._object_factory.another_valid_client_id_and_password()
         a_book = self._object_factory.a_book_from_the_editorial()
 
@@ -229,26 +221,17 @@ class StorefrontTests(unittest.TestCase):
         self._assert_cart_with_this_id_is_empty(first_client_cart_id)
         self._assert_cart_with_this_id_only_contains(second_client_cart_id, a_book)
         
-    def test05_cannot_add_book_to_invalid_cart(self):
-        try:
-            self._storefront.add_to_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_book_from_the_editorial(), 1)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
+    def test05_client_cannot_add_book_to_invalid_cart(self):
+        collaboration_to_assert = lambda: self._storefront.add_to_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_book_from_the_editorial(), 1)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.invalid_cart_error_message())
 
-    def test06_cannot_list_cart_content_of_invalid_cart(self):
-        try:
-            self._storefront.list_cart_content(self._object_factory.an_invalid_cart_id())
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
+    def test06_client_cannot_list_cart_content_of_invalid_cart(self):
+        collaboration_to_assert = lambda: self._storefront.list_cart_content(self._object_factory.an_invalid_cart_id())
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.invalid_cart_error_message())
 
-    def test07_cannot_checkout_cart_with_invalid_id(self):
-        try:
-            self._storefront.check_out_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_valid_credit_card())
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.invalid_cart_error_message())
+    def test07_client_cannot_checkout_cart_with_invalid_id(self):
+        collaboration_to_assert = lambda: self._storefront.check_out_cart(self._object_factory.an_invalid_cart_id(), self._object_factory.a_valid_credit_card())
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.invalid_cart_error_message())
 
     def test08_client_can_make_a_purchase(self):
         client_id, password = self._object_factory.a_valid_client_id_and_password()
@@ -258,8 +241,7 @@ class StorefrontTests(unittest.TestCase):
         
         transaction_id = self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
         self.assertFalse(len(transaction_id) == 0)
-        self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, 1))
-        self.assertEqual(self._storefront.list_purchases(client_id, password).total(), 50)
+        self._assert_client_has_only_purchased(client_id, password, a_book, 1)
 
     def test09_client_can_make_multiple_purchases(self):
         client_id, password = self._object_factory.a_valid_client_id_and_password()
@@ -274,54 +256,80 @@ class StorefrontTests(unittest.TestCase):
         second_transaction_id = self._storefront.check_out_cart(second_cart_id, self._object_factory.a_valid_credit_card())
 
         self.assertNotEqual(first_transaction_id, second_transaction_id)
-        self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, 4))
-        self.assertEqual(self._storefront.list_purchases(client_id, password).total(), 200)
+        self._assert_client_has_only_purchased(client_id, password, a_book, 4)
 
-    def test10_cannot_list_purchases_with_invalid_credentials(self):
+    def test10_client_cannot_list_purchases_with_invalid_credentials(self):
         invalid_client_id, invalid_client_password = self._object_factory.an_invalid_client_id_and_password()
 
-        try: 
-            self._storefront.list_purchases(invalid_client_id, invalid_client_password)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), LoginSystemMock.invalid_credentials_error_message())
-#extraer este metodo de try except q lo usamos mil veces
+        collaboration_to_assert = lambda: self._storefront.list_purchases(invalid_client_id, invalid_client_password)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, LoginSystemMock.invalid_credentials_error_message())
 
-    def test11_cannot_add_books_to_an_expired_cart(self): 
+    def test11_client_cannot_add_books_to_an_expired_cart(self): 
         cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
     
-        self._clock_mock.forward_time(60)
+        self._clock_mock.forward_time(35)
 
-        try: 
-            self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())
+        collaboration_to_assert = lambda: self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_is_expired_error_message())
         
-    def test12_cannot_list_content_of_an_expired_cart(self): 
+    def test12_client_cannot_list_content_of_an_expired_cart(self): 
         cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
     
-        self._clock_mock.forward_time(60)
+        self._clock_mock.forward_time(self._object_factory.minutes_before_cart_expires() + 5)
 
-        try: 
-            self._storefront.list_cart_content(cart_id)
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())
+        collaboration_to_assert = lambda: self._storefront.list_cart_content(cart_id)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_is_expired_error_message())
 
-    def test13_cannot_checkout_an_expired_cart(self): 
+    def test13_client_cannot_checkout_an_expired_cart(self): 
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+
+        self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+        self._clock_mock.forward_time(self._object_factory.minutes_before_cart_expires() + 5)
+
+        collaboration_to_assert = lambda: self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_is_expired_error_message())
+       
+    def test14_client_cart_expiration_time_is_reset_after_using_it(self):
+        client_id, password = self._object_factory.a_valid_client_id_and_password()
+        a_book = self._object_factory.a_book_from_the_editorial()
+        minutes_to_forward = int(self._object_factory.minutes_before_cart_expires() - self._object_factory.minutes_before_cart_expires() * 0.5)
+
+        cart_id = self._storefront.create_cart_for(client_id, password)
+        self._clock_mock.forward_time(minutes_to_forward)
+        self._storefront.list_cart_content(cart_id)
+        self._clock_mock.forward_time(minutes_to_forward)
+        self._storefront.add_to_cart(cart_id, a_book, 1)
+        self._clock_mock.forward_time(minutes_to_forward)
+        self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
+        self._clock_mock.forward_time(minutes_to_forward)
+        
+        self._assert_cart_with_this_id_only_contains(cart_id, a_book)
+        self._assert_client_has_only_purchased(client_id, password, a_book, 1)
+
+    def test15_client_cannot_checkout_an_already_checked_out_cart(self):
         cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
         self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+        
+        self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
 
-        self._clock_mock.forward_time(60)
+        collaboration_to_assert = lambda: self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_already_checked_out_error_message())
+        
+    def test16_client_cannot_add_book_to_an_already_checked_out_cart(self):
+        cart_id = self._object_factory.an_id_of_an_empty_cart(self._storefront)
+        self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+        
+        self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
 
-        try: 
-            self._storefront.check_out_cart(cart_id, self._object_factory.a_valid_credit_card())
-            self.fail()
-        except Exception as thrown_exception:
-            self.assertEqual(str(thrown_exception), Storefront.cart_is_expired_error_message())      
-       
-    #actions reset expiration time 
+        collaboration_to_assert = lambda: self._storefront.add_to_cart(cart_id, self._object_factory.a_book_from_the_editorial(), 1)
+        self._assert_collaboration_raises_error_with_message(collaboration_to_assert, Storefront.cart_already_checked_out_error_message())
+
+
+    def _assert_client_has_only_purchased(self, client_id, password, a_book, book_quantity):
+        total_price = self._object_factory.the_editorial_catalog()[a_book] * book_quantity
+
+        self.assertTrue(self._storefront.list_purchases(client_id, password).contains_item(a_book, book_quantity))
+        self.assertEqual(self._storefront.list_purchases(client_id, password).total(), total_price)
 
     def _assert_cart_with_this_id_is_empty(self, cart_id):
             self.assertEqual(len(self._storefront.list_cart_content(cart_id)), 0)
@@ -330,6 +338,13 @@ class StorefrontTests(unittest.TestCase):
         cart_content = self._storefront.list_cart_content(cart_id)
         self.assertTrue(a_book in cart_content)
         self.assertEqual(len(cart_content), 1)
+
+    def _assert_collaboration_raises_error_with_message(self, collaboration_to_run, error_message):
+        try: 
+            collaboration_to_run()
+            self.fail()
+        except Exception as thrown_exception:
+            self.assertEqual(str(thrown_exception), error_message)
 
 #####################################################################
 #                                                                   #

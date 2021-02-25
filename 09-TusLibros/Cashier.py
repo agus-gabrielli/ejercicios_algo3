@@ -9,7 +9,6 @@ class Cashier:
         self._merchant_processor = merchant_processor
 
     def check_out(self, client_cart, credit_card):
-        # Aca es uno o el otro, no podemos modularizar expiration y is empty no.
         if client_cart.is_empty():
             raise Exception(self.__class__.cannot_checkout_an_empty_cart_error_message())
         self._check_expiration_of(credit_card)

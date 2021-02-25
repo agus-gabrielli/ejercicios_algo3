@@ -34,14 +34,11 @@ class PublisherTestObjectsFactory:
         june_last_year = MonthOfYear(6, self.now().year - 1)
         return CreditCard('Juan Perez', "1234567891234567", june_last_year)
 
-    def the_editorial_catalog(self):
-        return ["9788498387087", "9788498389722", "9789878000121"]
-
     def a_book_from_the_editorial(self):
-        return self.the_editorial_catalog()[0]
+        return "9788498387087"
 
-    def price_list_from_the_editorial(self):
-        return {"9788498387087": 50.0, "9788498389722": 75.0, "9789878000121": 300000000000000.0}
+    def the_editorial_catalog(self):
+        return {self.a_book_from_the_editorial(): 50.0, "9788498389722": 75.0, "9789878000121": 300000000000000.0}
 
     def now(self):
         return datetime.now()
@@ -50,7 +47,7 @@ class PublisherTestObjectsFactory:
         return {"Mauro_Rizzi": "123457", "Agustin_Gabrielli": "pepito"}
 
     def a_storefront(self, clock_mock):
-        return Storefront(self.the_editorial_catalog(), LoginSystemMock(self.user_credentials()), self.price_list_from_the_editorial(), MockMerchantProcessor(), clock_mock, 30)
+        return Storefront(self.the_editorial_catalog(), LoginSystemMock(self.user_credentials()), MockMerchantProcessor(), clock_mock, self.minutes_before_cart_expires())
 
     def a_valid_client_id_and_password(self):
         return "Mauro_Rizzi", "123457"
@@ -68,4 +65,6 @@ class PublisherTestObjectsFactory:
         client_id, password = self.a_valid_client_id_and_password()
 
         return storefront.create_cart_for(client_id, password)
-    
+
+    def minutes_before_cart_expires(self):
+        return 30
